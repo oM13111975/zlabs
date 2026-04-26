@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+backend/__pycache__/
+backend/*/__pycache__/
+
+# Environments
+.env
+backend/.env
+
+# Database
+backend/db.sqlite3
+
+# Static / Media
+backend/media/
+backend/staticfiles/
+
+# Logs
+backend/activity_logs/migrations/
+internships/migrations/
+tasks/migrations/
+teams/migrations/
+projects/migrations/
+users/migrations/
+
+# OS
+.DS_Store
+Thumbs.db
