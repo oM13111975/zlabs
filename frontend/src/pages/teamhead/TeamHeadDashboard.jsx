@@ -187,7 +187,7 @@ export const TeamHeadDashboard = () => {
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>✅ Recent Tasks</h3>
-              <a href="/team-head/tasks" style={{ color: '#60a5fa', fontSize: 13, textDecoration: 'none' }}>All tasks →</a>
+              <a href="/team-head/tasks/projects" style={{ color: '#60a5fa', fontSize: 13, textDecoration: 'none' }}>All tasks →</a>
             </div>
             {loading ? <div style={{ color: '#64748b', fontSize: 13 }}>Loading...</div> :
             tasks.length === 0 ? (

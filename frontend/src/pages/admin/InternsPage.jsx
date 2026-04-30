@@ -81,7 +81,10 @@ export const InternsPage = () => {
                     </td>
                     <td>
                       {intern.converted_at ? (
-                        <StatusBadge status="completed" label="Converted" />
+                        <StatusBadge 
+                          status="completed" 
+                          label={`Converted to ${intern.user?.profile?.role === 'team_head' ? 'Team Head' : 'Member'}`} 
+                        />
                       ) : intern.is_ready_for_team ? (
                         <StatusBadge status="reviewed" label="Ready" />
                       ) : (

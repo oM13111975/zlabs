@@ -70,7 +70,7 @@ export const LoginPage = () => {
           </div>
 
           {/* Demo accounts */}
-          <div>
+          {/* <div>
             <div className="section-label">Demo accounts</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {DEMO_ACCOUNTS.map(a => (
@@ -93,7 +93,7 @@ export const LoginPage = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Right panel: form */}

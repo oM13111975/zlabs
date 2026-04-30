@@ -119,7 +119,7 @@ export const TasksPage = ({ role, taskType }) => {
   }
 
   const { user } = useAuth()
-  const canManage = ['super_admin', 'admin', 'team_head'].includes(role)
+  const canManage = ['super_admin', 'admin', 'team_head', 'team_member', 'mentor'].includes(role)
   const pageTitle = taskType === 'intern' ? 'Intern Tasks' : 'Project Tasks'
 
   return (

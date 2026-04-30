@@ -76,7 +76,7 @@ export const TeamMemberDashboard = () => {
       <TopBar
         title={`Welcome, ${user?.first_name || user?.username}`}
         subtitle="Your workspace"
-        actions={<a href="/team/tasks" className="btn btn-primary btn-sm">+ New Task</a>}
+        actions={<a href="/team/tasks/interns" className="btn btn-primary btn-sm">+ New Task</a>}
       />
       <div className="page slide-up">
 
@@ -109,7 +109,7 @@ export const TeamMemberDashboard = () => {
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-primary)' }}>My Tasks</div>
-              <a href="/team/tasks" style={{ fontSize: 12, color: 'var(--blue)', textDecoration: 'none' }}>View all</a>
+              <a href="/team/tasks/projects" style={{ fontSize: 12, color: 'var(--blue)', textDecoration: 'none' }}>View all</a>
             </div>
             {loading ? <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Loading...</div> :
             myTasks.length === 0 ? (

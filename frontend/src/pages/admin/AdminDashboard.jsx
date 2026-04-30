@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Layout, TopBar } from '../../components/Layout'
 import { authApi, internshipApi, taskApi, teamApi } from '../../api'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { 
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid,
+  AreaChart, Area, PieChart, Pie
+} from 'recharts'
 import { 
   Users, 
   UserPlus,
@@ -133,64 +136,118 @@ export const AdminDashboard = () => {
               ))}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.8fr', gap: 24 }}>
               
-              {/* 2. Tasks Visualizer */}
+              {/* 2. Status Distribution (Horizontal Bar) */}
               <div className="card">
                 <div className="card-header">
-                  <div className="card-title"><CheckCircle2 size={18} className="text-secondary" /> Tasks by Status</div>
-                  <div className="tag">Real-time</div>
+                  <div className="card-title"><CheckCircle2 size={18} className="text-secondary" /> Status Distribution</div>
+                  <div className="tag">{taskChart.reduce((a,b) => a + b.count, 0)} Total</div>
                 </div>
                 {taskChart.length === 0 ? (
-                  <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: 13, background: 'var(--bg-raised)', borderRadius: 8 }}>
-                    No task activity recorded yet
+                  <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: 13, background: 'var(--bg-raised)', borderRadius: 8 }}>
+                    No data
                   </div>
                 ) : (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={taskChart} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      <XAxis dataKey="status" tick={{ fontSize: 11, fontWeight: 500, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                  <div style={{ height: 280, padding: '10px 0' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart 
+                        data={taskChart} 
+                        margin={{ top: 20, right: 10, left: -20, bottom: 0 }}
+                        barCategoryGap="30%"
+                      >
+                        <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" opacity={0.4} />
+                        <XAxis 
+                          dataKey="status" 
+                          tick={{ fontSize: 10, fontWeight: 700, fill: 'var(--text-muted)' }} 
+                          axisLine={false} 
+                          tickLine={false}
+                          dy={10}
+                        />
+                        <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                        <Tooltip
+                          cursor={{ fill: 'var(--bg-raised)', opacity: 0.4 }}
+                          contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, boxShadow: 'var(--shadow-lg)' }}
+                        />
+                        <Bar dataKey="count" radius={[6, 6, 0, 0]} animationDuration={1500} background={{ fill: 'var(--bg-raised)', radius: 6 }}>
+                          {taskChart.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={BAR_COLORS[entry.status] || 'var(--blue)'} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </div>
+
+              {/* 3. Activity Trend (Area) */}
+              <div className="card">
+                <div className="card-header">
+                  <div className="card-title"><Zap size={18} className="text-secondary" /> Platform Activity Trend</div>
+                  <div className="tag" style={{ background: 'var(--blue-muted)', color: 'var(--blue)' }}>6 Months</div>
+                </div>
+                {!s.monthly_tasks || s.monthly_tasks.length === 0 ? (
+                  <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: 13, background: 'var(--bg-raised)', borderRadius: 8 }}>
+                    Gathering trend data...
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={260}>
+                    <AreaChart data={s.monthly_tasks} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="var(--blue)" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="var(--blue)" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" opacity={0.5} />
+                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
                       <Tooltip
-                        contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12, boxShadow: 'var(--shadow-md)' }}
-                        cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+                        contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12, boxShadow: 'var(--shadow-lg)' }}
                       />
-                      <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={40}>
-                        {taskChart.map((entry, i) => (
-                          <Cell key={i} fill={BAR_COLORS[entry.status] || 'var(--blue)'} />
-                        ))}
-                      </Bar>
-                    </BarChart>
+                      <Area 
+                        type="monotone" 
+                        dataKey="count" 
+                        stroke="var(--blue)" 
+                        strokeWidth={3}
+                        fillOpacity={1} 
+                        fill="url(#colorCount)" 
+                        animationDuration={2000}
+                      />
+                    </AreaChart>
                   </ResponsiveContainer>
                 )}
               </div>
 
-              {/* 3. Role Distribution */}
-              <div className="card">
-                <div className="card-header">
-                  <div className="card-title"><UserCheck size={18} className="text-secondary" /> Workforce Distribution</div>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {s.users_by_role && Object.entries(s.users_by_role).map(([role, count]) => {
-                    const total = Object.values(s.users_by_role).reduce((a, b) => a + b, 0)
-                    const pct = total > 0 ? Math.round((count / total) * 100) : 0
-                    const colors = { super_admin: 'var(--blue)', admin: 'var(--red)', mentor: 'var(--blue)', team_member: 'var(--blue)', team_head: 'var(--purple)', intern: 'var(--amber)' }
-                    const label = role === 'mentor' || role === 'team_member' ? 'Member' : role.replace(/_/g, ' ')
-                    return (
-                      <div key={role}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, alignItems: 'center' }}>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', textTransform: 'capitalize' }}>{label}</span>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>{count} ({pct}%)</span>
-                        </div>
-                        <div style={{ height: 8, background: 'var(--bg-raised)', borderRadius: 4, overflow: 'hidden' }}>
-                          <div style={{ width: `${pct}%`, height: '100%', background: colors[role] || 'var(--blue)', borderRadius: 4, transition: 'width 1s ease' }} />
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
             </div>
+
+            {/* 4. Workforce Distribution & Operations */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.8fr', gap: 24 }}>
+                {/* Workforce Breakdown */}
+                <div className="card">
+                    <div className="card-header">
+                        <div className="card-title"><UserCheck size={18} className="text-secondary" /> Workforce Distribution</div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    {s.users_by_role && Object.entries(s.users_by_role).map(([role, count]) => {
+                        const total = Object.values(s.users_by_role).reduce((a, b) => a + b, 0)
+                        const pct = total > 0 ? Math.round((count / total) * 100) : 0
+                        const colors = { super_admin: 'var(--blue)', admin: 'var(--red)', mentor: 'var(--blue)', team_member: 'var(--blue)', team_head: 'var(--purple)', intern: 'var(--amber)' }
+                        const label = role === 'mentor' || role === 'team_member' ? 'Member' : role.replace(/_/g, ' ')
+                        return (
+                        <div key={role}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, alignItems: 'center' }}>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', textTransform: 'capitalize' }}>{label}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>{count} ({pct}%)</span>
+                            </div>
+                            <div style={{ height: 8, background: 'var(--bg-raised)', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ width: `${pct}%`, height: '100%', background: colors[role] || 'var(--blue)', borderRadius: 4, transition: 'width 1s ease' }} />
+                            </div>
+                        </div>
+                        )
+                    })}
+                    </div>
+                </div>
 
             {/* 4. Quick Access Grid */}
             <div>
@@ -217,6 +274,7 @@ export const AdminDashboard = () => {
                   </a>
                 ))}
               </div>
+                </div>
             </div>
 
             {/* 5. System Meetings */}

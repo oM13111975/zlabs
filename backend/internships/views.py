@@ -258,13 +258,14 @@ class ConvertInternView(APIView):
         team_id = request.data.get('team_id')
         project_id = request.data.get('project_id')
 
-        # 1. Create User if not exists
+        # 1. Create or Update User
         user = intern.user
-        password = 'member@123' # Default member password
+        password_to_send = None
+
         if not user:
             # Check if email taken
             if User.objects.filter(email=intern.application.email).exists():
-                 return Response({'error': 'A user with this email already exists.'}, status=400)
+                 return Response({'error': 'A user with this email already exists. Please link it manually or use a different email.'}, status=400)
             
             username = intern.application.email.split('@')[0].lower().replace('.', '_')
             base_username = username
@@ -273,24 +274,32 @@ class ConvertInternView(APIView):
                 username = f'{base_username}{counter}'
                 counter += 1
 
+            password_to_send = generate_password() # Generate a unique permanent password
             user = User.objects.create_user(
                 username=username,
                 email=intern.application.email.lower(),
                 first_name=intern.application.name.split()[0] if intern.application.name else '',
                 last_name=' '.join(intern.application.name.split()[1:]) if len(intern.application.name.split()) > 1 else '',
             )
-            user.set_password(password)
+            user.set_password(password_to_send)
             user.is_active = True
             user.save()
             UserProfile.objects.create(user=user, role=target_role, phone=intern.application.phone)
             intern.user = user
         else:
-            # Update existing user role and reset password to the conversion password
-            user.set_password(password)
-            user.save()
+            # If user already exists, we only reset password if they haven't been converted yet
+            # or if the admin explicitly wants to (for now we assume we only set it if not already converted)
             profile = user.profile
             profile.role = target_role
             profile.save()
+            
+            if not intern.converted_at:
+                password_to_send = generate_password()
+                user.set_password(password_to_send)
+                user.save()
+            else:
+                # Already converted, maybe just role update. We don't share a new password unless needed.
+                password_to_send = "******** (Keep your existing password)"
 
         # 2. Assign to team
         if team_id and str(team_id).isdigit():
@@ -301,12 +310,30 @@ class ConvertInternView(APIView):
             except Team.DoesNotExist:
                 pass
 
-        # 3. Assign to project
-        if project_id:
-            intern.domain = f'project:{project_id}'
+        # 3. Assign to project & Sync Data
+        target_project_id = project_id
+        if not target_project_id and intern.domain and intern.domain.startswith('project:'):
+            try:
+                target_project_id = int(intern.domain.split(':')[1])
+            except (ValueError, IndexError):
+                pass
 
-        intern.converted_at = timezone.now()
+        if target_project_id and str(target_project_id).isdigit():
+            from projects.models import Project
+            try:
+                proj = Project.objects.get(pk=target_project_id)
+                proj.members.add(user)
+                intern.domain = f'project:{target_project_id}'
+            except Project.DoesNotExist:
+                pass
+
+        if not intern.converted_at:
+            intern.converted_at = timezone.now()
         intern.save()
+
+        # 3.5 Sync all tasks from internship to the new User account
+        from tasks.models import Task
+        Task.objects.filter(assigned_intern=intern).update(assigned_to=user, task_type='team')
 
         # 4. Send credentials email
         from django.conf import settings
@@ -316,7 +343,7 @@ class ConvertInternView(APIView):
                 email=intern.application.email,
                 role=target_role,
                 username=user.username,
-                password=password,
+                password=password_to_send,
                 login_url=settings.FRONTEND_URL + "/login",
                 custom_subject=request.data.get('email_subject'),
                 custom_body=request.data.get('email_body'),
@@ -333,7 +360,7 @@ class ConvertInternView(APIView):
         return Response({
             'message': f'Intern successfully converted to {target_role.replace("_", " ")}.',
             'username': user.username,
-            'password': password
+            'password': password_to_send
         })
 
 

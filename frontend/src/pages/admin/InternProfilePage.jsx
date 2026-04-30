@@ -511,7 +511,7 @@ export const InternProfilePage = () => {
 
             {intern.converted_at && (
                 <div className="card card-sm" style={{ background: 'var(--bg-raised)' }}>
-                    <div className="section-label">✅ Converted</div>
+                    <div className="section-label">✅ Converted to {intern.user?.profile?.role === 'team_head' ? 'Team Head' : 'Member'}</div>
                     <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '8px 0 0' }}>
                         Promoted on {new Date(intern.converted_at).toLocaleDateString()}
                     </p>
