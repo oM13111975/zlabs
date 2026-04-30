@@ -23,7 +23,6 @@ class TeamListCreateView(generics.ListCreateAPIView):
         role = user.profile.role if hasattr(user, 'profile') else None
         qs = Team.objects.select_related('head').prefetch_related('memberships')
         if role == 'team_head':
-            from .models import TeamMembership
             head_team_ids = Team.objects.filter(head=user).values_list('id', flat=True)
             member_team_ids = TeamMembership.objects.filter(user=user).values_list('team_id', flat=True)
             all_team_ids = set(list(head_team_ids) + list(member_team_ids))
