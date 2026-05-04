@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import LoginPage from './pages/LoginPage'
 import { CareersPage } from './pages/CareersPage'
 import { PublicSubmitPage } from './pages/PublicSubmitPage'
+import { LandingPage } from './pages/LandingPage'
 
 // Admin pages
 import { AdminDashboard } from './pages/admin/AdminDashboard'
@@ -15,6 +16,7 @@ import { TeamsPage } from './pages/admin/TeamsPage'
 import { ProjectsPage } from './pages/admin/ProjectsPage'
 import { ActivityLogsPage } from './pages/admin/ActivityLogsPage'
 import { UsersPage } from './pages/admin/UsersPage'
+import { MembersPage } from './pages/admin/MembersPage'
 import HierarchyPage from './pages/admin/HierarchyPage'
 
 // Shared
@@ -53,25 +55,17 @@ const HomeRedirect = () => {
   return <Navigate to={routes[role] || '/login'} replace />
 }
 
-const InternPortal = () => (
-  <div style={{ minHeight: '100vh', background: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-    <div style={{ textAlign: 'center', maxWidth: 480 }}>
-      <div style={{ fontSize: 64, marginBottom: 20 }}>📋</div>
-      <h2 style={{ color: '#111827', fontSize: 24, fontWeight: 800, marginBottom: 12 }}>Intern Portal</h2>
-      <p style={{ color: '#4b5563', lineHeight: 1.7, marginBottom: 16 }}>
-        As an intern, your mentor will email you task assignment links directly. Use those links to submit your work.
-      </p>
-      <a href="/careers" style={{ display: 'inline-block', marginTop: 24, color: 'var(--blue)', textDecoration: 'none', fontSize: 14 }}>← Back to Career Page</a>
-    </div>
-  </div>
-)
+// Intern pages
+import { InternDashboard } from './pages/intern/InternDashboard'
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomeRedirect />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/zportal" element={<LandingPage />} />
+          <Route path="/home" element={<HomeRedirect />} />
           <Route path="/careers" element={<CareersPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/submit/:token" element={<PublicSubmitPage />} />
@@ -80,6 +74,7 @@ function App() {
           <Route path="/admin" element={<Protected roles={['admin', 'super_admin']}><AdminDashboard /></Protected>} />
           <Route path="/admin/applicants" element={<Protected roles={['admin', 'super_admin']}><ApplicantsPage /></Protected>} />
           <Route path="/admin/interns" element={<Protected roles={['admin', 'super_admin']}><InternsPage /></Protected>} />
+          <Route path="/admin/members" element={<Protected roles={['admin', 'super_admin']}><MembersPage /></Protected>} />
           <Route path="/admin/interns/:id" element={<Protected roles={['admin', 'super_admin']}><InternProfilePage /></Protected>} />
           <Route path="/admin/teams" element={<Protected roles={['admin', 'super_admin']}><TeamsPage /></Protected>} />
           <Route path="/admin/projects" element={<Protected roles={['admin', 'super_admin']}><ProjectsPage /></Protected>} />
@@ -106,7 +101,7 @@ function App() {
           <Route path="/team-head/interns/:id" element={<Protected roles={['team_head']}><InternProfilePage /></Protected>} />
           <Route path="/team-head/projects" element={<Protected roles={['team_head']}><ProjectsPage role="team_head" /></Protected>} />
 
-          <Route path="/intern-portal" element={<Protected roles={['intern']}><InternPortal /></Protected>} />
+          <Route path="/intern-portal" element={<Protected roles={['intern']}><InternDashboard /></Protected>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

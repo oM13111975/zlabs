@@ -35,9 +35,10 @@ export const InternsPage = () => {
               <tr>
                 <th>Intern Detail</th>
                 <th>Focus Domain</th>
+                <th>Skills</th>
                 <th>Assigned Mentor</th>
                 <th>Task Progress</th>
-                <th>Submission Status</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -60,6 +61,11 @@ export const InternsPage = () => {
                     </td>
                     <td>
                         <span className="badge badge-submitted">{intern.domain || 'General'}</span>
+                    </td>
+                    <td>
+                      <div style={{ fontSize: 12, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-secondary)' }} title={intern.application?.skills}>
+                        {intern.application?.skills || '—'}
+                      </div>
                     </td>
                     <td>
                       {intern.mentor ? (

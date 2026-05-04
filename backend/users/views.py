@@ -59,7 +59,10 @@ class UserListView(generics.ListAPIView):
         qs = User.objects.select_related('profile').all()
         role = self.request.query_params.get('role')
         if role:
-            qs = qs.filter(profile__role=role)
+            if ',' in role:
+                qs = qs.filter(profile__role__in=role.split(','))
+            else:
+                qs = qs.filter(profile__role=role)
         search = self.request.query_params.get('search')
         if search:
             qs = qs.filter(username__icontains=search) | qs.filter(email__icontains=search)

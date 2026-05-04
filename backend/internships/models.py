@@ -48,12 +48,12 @@ class Application(models.Model):
 
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=20, blank=True)
     role_applied_for = models.CharField(
         max_length=50, choices=ROLE_CHOICES, default='dev_intern',
         help_text='Internship role the applicant is applying for'
     )
-    skills = models.TextField(help_text='Comma-separated skills')
+    skills = models.TextField(blank=True, help_text='Comma-separated skills')
     cover_letter = models.TextField(blank=True, help_text='Why do you want this role?')
     resume = models.FileField(upload_to='resumes/')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')

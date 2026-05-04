@@ -70,10 +70,14 @@ class ApplicationListView(generics.ListAPIView):
     serializer_class = ApplicationSerializer
 
     def get_queryset(self):
-        qs = Application.objects.all()
+        qs = Application.objects.all().order_by('-applied_at')
         status_filter = self.request.query_params.get('status')
         if status_filter:
             qs = qs.filter(status=status_filter)
+        else:
+            # Default to only pending applicants
+            qs = qs.filter(status='pending')
+            
         role_filter = self.request.query_params.get('role')
         if role_filter:
             qs = qs.filter(role_applied_for=role_filter)
@@ -107,17 +111,43 @@ class ApplicationAcceptView(APIView):
             except User.DoesNotExist:
                 pass
 
-        # 3. Create intern profile (WITHOUT user)
+        # 3. Create User account for the intern
+        password = generate_password()
+        username = application.email.split('@')[0].lower().replace('.', '_')
+        base_username = username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f'{base_username}{counter}'
+            counter += 1
+        
+        user = User.objects.create_user(
+            username=username,
+            email=application.email.lower(),
+            first_name=application.name.split()[0] if application.name else '',
+            last_name=' '.join(application.name.split()[1:]) if len(application.name.split()) > 1 else '',
+        )
+        user.set_password(password)
+        user.save()
+        
+        UserProfile.objects.create(user=user, role='intern', phone=application.phone)
+
+        # 4. Create intern profile linked to user
         intern_profile = InternProfile.objects.create(
+            user=user,
             application=application,
-            mentor=mentor
+            mentor=mentor,
+            domain=application.role_applied_for
         )
 
-        # 4. Send welcome email (no credentials yet)
+        # 5. Send welcome email with credentials
+        from django.conf import settings
         try:
             send_intern_welcome_email(
                 name=application.name,
                 email=application.email,
+                username=username,
+                password=password,
+                login_url=settings.FRONTEND_URL + "/login"
             )
         except Exception:
             pass 
@@ -125,12 +155,14 @@ class ApplicationAcceptView(APIView):
         log_activity(
             user=request.user,
             action_type='application_accepted',
-            description=f'Application from {application.name} accepted. Logins will be created at conversion.',
+            description=f'Application from {application.name} accepted. User {username} created.',
         )
 
         return Response({
-            'message': 'Application accepted. Intern profile created.',
+            'message': 'Application accepted. Intern account created.',
             'intern_id': intern_profile.id,
+            'username': username,
+            'password': password
         }, status=201)
 
 
@@ -166,15 +198,22 @@ class InternListView(generics.ListAPIView):
         user = self.request.user
         qs = InternProfile.objects.select_related('user', 'mentor', 'application').all()
         role = user.profile.role if hasattr(user, 'profile') else None
-        # team_member, mentor and team_head all have mentor duties
-        if role in ('mentor', 'team_member', 'team_head'):
-            qs = qs.filter(mentor=user)
-        ready = self.request.query_params.get('ready')
-        if ready == 'true':
-            qs = qs.filter(is_ready_for_team=True, converted_at__isnull=True)
+        
+        # Default: Exclude converted interns (unless explicitly requested)
         converted = self.request.query_params.get('converted')
         if converted == 'true':
             qs = qs.filter(converted_at__isnull=False)
+        else:
+            qs = qs.filter(converted_at__isnull=True)
+
+        # Filter by mentor duties
+        if role in ('mentor', 'team_member', 'team_head'):
+            qs = qs.filter(mentor=user)
+            
+        ready = self.request.query_params.get('ready')
+        if ready == 'true':
+            qs = qs.filter(is_ready_for_team=True)
+            
         return qs
 
 
@@ -294,12 +333,16 @@ class ConvertInternView(APIView):
             profile.save()
             
             if not intern.converted_at:
-                password_to_send = generate_password()
-                user.set_password(password_to_send)
-                user.save()
+                # Keep existing password if they were already an intern with an account
+                if user.has_usable_password():
+                    password_to_send = "******** (Your current login password)"
+                else:
+                    password_to_send = generate_password()
+                    user.set_password(password_to_send)
+                    user.save()
             else:
-                # Already converted, maybe just role update. We don't share a new password unless needed.
-                password_to_send = "******** (Keep your existing password)"
+                # Already converted, maybe just role update.
+                password_to_send = "******** (Your current login password)"
 
         # 2. Assign to team
         if team_id and str(team_id).isdigit():
@@ -333,7 +376,10 @@ class ConvertInternView(APIView):
 
         # 3.5 Sync all tasks from internship to the new User account
         from tasks.models import Task
+        # Update tasks linked to the intern profile
         Task.objects.filter(assigned_intern=intern).update(assigned_to=user, task_type='team')
+        # Also update any tasks already assigned to the user that are still marked as 'intern'
+        Task.objects.filter(assigned_to=user, task_type='intern').update(task_type='team')
 
         # 4. Send credentials email
         from django.conf import settings

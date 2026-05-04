@@ -32,10 +32,13 @@ class TaskListCreateView(generics.ListCreateAPIView):
         if role in ('admin', 'super_admin'):
             pass  # sees all
         elif role in ('mentor', 'team_member'):
-            # strictly see ONLY their own tasks
+            # Members/Mentors see:
+            # 1. Any task they created/assigned (assigned_by=user)
+            # 2. Project tasks assigned specifically to them (assigned_to=user AND task_type='team')
+            # They should NOT see tasks where they are the 'assigned_to' if it's an 'intern' task (remnants of their own internship)
             qs = qs.filter(
                 Q(assigned_by=user) | 
-                Q(assigned_to=user)
+                (Q(assigned_to=user) & Q(task_type='team'))
             ).distinct()
         elif role == 'team_head':
             from teams.models import TeamMembership
@@ -102,7 +105,7 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
         task = serializer.save(assigned_by=user)
         
-        assigned_name = "User"
+        assigned_name = "Unassigned"
         if task.assigned_to:
             assigned_name = task.assigned_to.get_full_name() or task.assigned_to.username
         elif task.assigned_intern:
@@ -117,24 +120,31 @@ class TaskListCreateView(generics.ListCreateAPIView):
         )
         # Send email
         try:
-            intern_name = task.assigned_to.get_full_name() if task.assigned_to else task.assigned_intern.full_name
-            intern_email = task.assigned_to.email if task.assigned_to else task.assigned_intern.application.email
+            intern_name = "User"
+            intern_email = None
             
-            email_subject = self.request.data.get('email_subject')
-            email_body = self.request.data.get('email_body')
+            if task.assigned_to:
+                intern_name = task.assigned_to.get_full_name() or task.assigned_to.username
+                intern_email = task.assigned_to.email
+            elif task.assigned_intern:
+                intern_name = task.assigned_intern.full_name
+                intern_email = task.assigned_intern.application.email
             
-            from django.conf import settings
-            send_task_assignment_email(
-                intern_name=intern_name,
-                intern_email=intern_email,
-                task_title=task.title,
-                task_description=task.description,
-                deadline=task.deadline,
-                submission_url=f"{settings.FRONTEND_URL}/submit/{task.submission_token}",
-                mentor_name=self.request.user.get_full_name() or self.request.user.username,
-                custom_subject=email_subject,
-                custom_body=email_body,
-            )
+            if intern_email:
+                email_subject = self.request.data.get('email_subject')
+                email_body = self.request.data.get('email_body')
+                from django.conf import settings
+                send_task_assignment_email(
+                    intern_name=intern_name,
+                    intern_email=intern_email,
+                    task_title=task.title,
+                    task_description=task.description,
+                    deadline=task.deadline,
+                    mentor_name=self.request.user.get_full_name() or self.request.user.username,
+                    login_url=f"{settings.FRONTEND_URL}/login",
+                    custom_subject=email_subject,
+                    custom_body=email_body,
+                )
         except Exception:
             pass
 
@@ -193,8 +203,12 @@ class PublicTaskSubmitView(APIView):
         task = get_object_or_404(Task, submission_token=token)
         
         email_provided = request.query_params.get('email', '').strip().lower()
-        target_email = (task.assigned_to.email if task.assigned_to 
-                        else task.assigned_intern.application.email).lower()
+        target_email = ""
+        if task.assigned_to:
+            target_email = task.assigned_to.email
+        elif task.assigned_intern and task.assigned_intern.application:
+            target_email = task.assigned_intern.application.email
+        target_email = target_email.lower()
         
         history = []
         if email_provided == target_email:
@@ -216,12 +230,18 @@ class PublicTaskSubmitView(APIView):
             history_qs = Task.objects.filter(q).exclude(id=task.id).order_by('-created_at')
             history = TaskSerializer(history_qs, many=True).data
 
+        assignee_name = "Unassigned"
+        if task.assigned_to:
+            assignee_name = task.assigned_to.get_full_name() or task.assigned_to.username
+        elif task.assigned_intern:
+            assignee_name = task.assigned_intern.full_name
+
         return Response({
             'task_id': task.id,
             'title': task.title,
             'description': task.description,
             'deadline': task.deadline,
-            'assigned_to': task.assigned_to.get_full_name() if task.assigned_to else task.assigned_intern.full_name,
+            'assigned_to': assignee_name,
             'already_submitted': hasattr(task, 'submission'),
             'history': history,
             'is_verified': email_provided == target_email,
@@ -253,13 +273,23 @@ class PublicTaskSubmitView(APIView):
         try:
             from django.conf import settings
             mentor = task.assigned_by
-            if mentor:
+            if task.assigned_to:
+                intern_name = task.assigned_to.get_full_name() or task.assigned_to.username
+                intern_email = task.assigned_to.email
+            elif task.assigned_intern:
+                intern_name = task.assigned_intern.full_name
+                intern_email = task.assigned_intern.application.email
+            else:
+                intern_name = "User"
+                intern_email = None
+
+            if mentor and intern_email:
                 send_task_submission_notification(
                     mentor_email=mentor.email,
                     mentor_name=mentor.get_full_name() or mentor.username,
-                    intern_name=task.assigned_to.get_full_name() if task.assigned_to else task.assigned_intern.full_name,
+                    intern_name=intern_name,
                     task_title=task.title,
-                    portal_url=f"{settings.FRONTEND_URL}/admin/interns/{task.assigned_intern.id if task.assigned_intern else 'tasks'}",
+                    portal_url=f"{settings.FRONTEND_URL}/login",
                     attachment=submission.file_upload
                 )
         except Exception:
@@ -326,8 +356,9 @@ class TaskFeedbackView(APIView):
             task.feedback.feedback_text = request.data.get('feedback_text', task.feedback.feedback_text)
             task.feedback.rating = request.data.get('rating', task.feedback.rating)
             task.feedback.save()
+            feedback = task.feedback
         else:
-            TaskFeedback.objects.create(
+            feedback = TaskFeedback.objects.create(
                 task=task,
                 feedback_text=request.data.get('feedback_text', ''),
                 given_by=request.user,
@@ -351,16 +382,25 @@ class TaskFeedbackView(APIView):
 
         # Send feedback email
         try:
-            intern_name = task.assigned_to.get_full_name() if task.assigned_to else task.assigned_intern.full_name
-            intern_email = task.assigned_to.email if task.assigned_to else task.assigned_intern.application.email
-            send_feedback_email(
-                intern_name=intern_name,
-                intern_email=intern_email,
-                task_title=task.title,
-                feedback_text=request.data.get('feedback_text', ''),
-                rating=request.data.get('rating'),
-                mentor_name=request.user.get_full_name() or request.user.username,
-            )
+            if task.assigned_to:
+                intern_name = task.assigned_to.get_full_name() or task.assigned_to.username
+                intern_email = task.assigned_to.email
+            elif task.assigned_intern:
+                intern_name = task.assigned_intern.full_name
+                intern_email = task.assigned_intern.application.email
+            else:
+                intern_name = "User"
+                intern_email = None
+
+            if intern_email:
+                send_feedback_email(
+                    intern_name=intern_name,
+                    intern_email=intern_email,
+                    task_title=task.title,
+                    feedback_text=feedback.feedback_text,
+                    rating=feedback.rating,
+                    mentor_name=request.user.get_full_name() or request.user.username,
+                )
         except Exception:
             pass
 
@@ -384,13 +424,14 @@ class TaskReminderView(APIView):
             intern_name = task.assigned_to.get_full_name() if task.assigned_to else task.assigned_intern.full_name
             intern_email = task.assigned_to.email if task.assigned_to else task.assigned_intern.application.email
             from django.conf import settings
-            send_reminder_email(
-                intern_name=intern_name,
-                intern_email=intern_email,
-                task_title=task.title,
-                deadline=task.deadline,
-                submission_url=f"{settings.FRONTEND_URL}/submit/{task.submission_token}",
-            )
+            if intern_email:
+                send_reminder_email(
+                    intern_name=intern_name,
+                    intern_email=intern_email,
+                    task_title=task.title,
+                    deadline=task.deadline,
+                    login_url=f"{settings.FRONTEND_URL}/login",
+                )
         except Exception as e:
             return Response({'error': str(e)}, status=500)
         return Response({'message': 'Reminder sent.'})

@@ -2,18 +2,22 @@ from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 
 
-def send_intern_welcome_email(name, email):
+def send_intern_welcome_email(name, email, username, password, login_url):
     subject = '🎉 Welcome to the ZLabs Internship Program!'
     message = f"""
 Dear {name},
 
 We are thrilled to inform you that your application has been ACCEPTED!
 
-Welcome to ZLabs Internship Program.
+Welcome to ZLabs Internship Program. Your intern account has been created, and you can now access your dashboard to view and submit your tasks.
 
-You will receive task assignments directly at this email address. Each task will contain a unique link for you to submit your work—no portal login is required for now.
+Your login credentials:
+━━━━━━━━━━━━━━━━━━━━━━
+Username: {username}
+Password: {password}
+━━━━━━━━━━━━━━━━━━━━━━
 
-Once you complete your internship successfully, you may be invited to join our team officially as a permanent member with access to our internal portal.
+Login here: {login_url}
 
 Best regards,
 ZLabs Team
@@ -50,19 +54,15 @@ ZLabs Team
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
 
 
-def send_task_assignment_email(intern_name, intern_email, task_title, task_description, deadline, submission_url, mentor_name, custom_subject=None, custom_body=None):
+def send_task_assignment_email(intern_name, intern_email, task_title, task_description, deadline, mentor_name, login_url, custom_subject=None, custom_body=None):
     subject = custom_subject or f'📋 New Task Assigned: {task_title}'
     
     if custom_body:
         message = custom_body.replace('[[NAME]]', intern_name) \
                             .replace('[[DESCRIPTION]]', task_description) \
                             .replace('[[DEADLINE]]', deadline.strftime('%B %d, %Y %I:%M %p') if deadline else 'N/A') \
-                            .replace('[[SENDER]]', mentor_name)
-        
-        if '[[SUBMISSION_URL]]' in message:
-            message = message.replace('[[SUBMISSION_URL]]', submission_url)
-        else:
-            message += f"\n\nSubmit your work here:\n{submission_url}"
+                            .replace('[[SENDER]]', mentor_name) \
+                            .replace('[[LOGIN_URL]]', login_url)
     else:
         message = f"""
 Dear {intern_name},
@@ -76,10 +76,8 @@ Description: {task_description}
 Deadline: {deadline.strftime('%B %d, %Y %I:%M %p') if deadline else 'N/A'}
 ━━━━━━━━━━━━━━━━━━━━━━
 
-Submit your work here:
-{submission_url}
-
-This link can be accessed without logging in.
+You can view more details and submit your work through the ZLabs Portal:
+{login_url}
 
 Good luck!
 
@@ -111,7 +109,7 @@ ZLabs Team
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [intern_email])
 
 
-def send_reminder_email(intern_name, intern_email, task_title, deadline, submission_url):
+def send_reminder_email(intern_name, intern_email, task_title, deadline, login_url):
     subject = f'⏰ Reminder: Task deadline approaching — {task_title}'
     message = f"""
 Dear {intern_name},
@@ -121,7 +119,8 @@ This is a reminder that your task is due soon.
 Task: {task_title}
 Deadline: {deadline.strftime('%B %d, %Y %I:%M %p') if deadline else 'N/A'}
 
-Submit here: {submission_url}
+Login to the portal to submit your work:
+{login_url}
 
 Best regards,
 ZLabs Team

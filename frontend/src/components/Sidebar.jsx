@@ -18,12 +18,13 @@ const NAV = {
     { to: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
     { to: '/admin/applicants', label: 'Applicants', icon: <UserPlus size={18} /> },
     { to: '/admin/interns', label: 'Interns', icon: <GraduationCap size={18} /> },
+    { to: '/admin/members', label: 'Members', icon: <Users size={18} /> },
     { to: '/admin/teams', label: 'Teams', icon: <Users size={18} /> },
     { to: '/admin/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
     { to: '/admin/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/admin/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/admin/hierarchy', label: 'Hierarchy', icon: <Network size={18} /> },
-    { to: '/admin/users', label: 'Users', icon: <User size={18} /> },
+    { to: '/admin/users', label: 'Settings', icon: <User size={18} /> },
   ],
   team_member: [
     { to: '/team', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
@@ -46,6 +47,9 @@ const NAV = {
     { to: '/team-head/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team-head/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team-head/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
+  ],
+  intern: [
+    { to: '/intern-portal', label: 'Intern Portal', icon: <LayoutDashboard size={18} /> },
   ],
 }
 NAV.super_admin = NAV.admin
@@ -71,7 +75,7 @@ export const Sidebar = () => {
     <div className="sidebar">
       <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 900, color: '#fff' }}>Z</div>
+          <img src="/logo.png" alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
           <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>ZLabs Portal</span>
         </div>
       </div>

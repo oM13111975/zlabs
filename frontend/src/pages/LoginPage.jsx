@@ -1,13 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-
-const DEMO_ACCOUNTS = [
-  { role: 'Super Admin', user: 'nitesh', pass: 'admin@123' },
-  { role: 'Admin', user: 'aryangiri', pass: 'admin@123' },
-  { role: 'Team Head', user: 'teamhead_ali', pass: 'teamhead@123' },
-  { role: 'Intern', user: 'intern_priya', pass: 'intern@123' },
-]
+import { ArrowRight, Lock, User, CheckCircle2 } from 'lucide-react'
 
 export const LoginPage = () => {
   const { login } = useAuth()
@@ -36,110 +30,180 @@ export const LoginPage = () => {
     } finally { setLoading(false) }
   }
 
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ width: '100%', maxWidth: 880, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, alignItems: 'start' }}>
+  // Design Tokens matching Landing Page
+  const theme = {
+    navy: '#101c44',
+    accent: '#2563eb',
+    slate: '#475569',
+    bg: '#f8fafc',
+    border: '#e2e8f0',
+  }
 
-        {/* Left panel: branding */}
-        <div style={{ paddingTop: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 48 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 800, color: '#fff' }}>Z</div>
-            <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>ZLabs</span>
+  return (
+    <div style={{ 
+      minHeight: '100vh', 
+      background: theme.bg, 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      padding: 24,
+      fontFamily: "'Inter', sans-serif"
+    }}>
+      <div style={{ 
+        width: '100%', 
+        maxWidth: 1000, 
+        display: 'grid', 
+        gridTemplateColumns: '1.2fr 1fr', 
+        gap: 60, 
+        alignItems: 'center',
+        background: '#fff',
+        padding: 40,
+        borderRadius: 32,
+        boxShadow: '0 20px 60px rgba(16, 28, 68, 0.08)',
+        border: `1px solid ${theme.border}`
+      }}>
+
+        {/* Left Side: Branding & Value Prop */}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 48 }}>
+            <img src="/logo.png" alt="ZPortal" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+            <span style={{ fontSize: 20, fontWeight: 800, color: theme.navy, letterSpacing: '-0.03em' }}>ZPortal</span>
           </div>
 
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 12, lineHeight: 1.2 }}>
-            Internship &amp; Team Management Portal
+          <h1 style={{ fontSize: 36, fontWeight: 900, color: theme.navy, marginBottom: 16, lineHeight: 1.1, letterSpacing: '-0.04em' }}>
+            The professional engine for <em>talent evolution.</em>
           </h1>
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 36, fontSize: 14 }}>
-            Manage the full lifecycle from internship application to team member. Track tasks, give feedback, and grow your team — all in one place.
+          <p style={{ color: theme.slate, lineHeight: 1.7, marginBottom: 40, fontSize: 16 }}>
+            Manage the full lifecycle from internship application to full-time member. Track tasks, give feedback, and grow your team in one transparent ecosystem.
           </p>
 
-          {/* Features */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 36 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
-              'Role-based access for Admin, Team Head, Team Member',
-              'Internship applications with resume upload',
-              'Task assignment with public submission links',
-              'Intern-to-team-member conversion workflow',
+              'Role-based access & security',
+              'Automated internship workflows',
+              'Performance tracking & feedback',
+              'One-click member conversion'
             ].map(f => (
-              <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--text-secondary)' }}>
-                <span style={{ color: 'var(--green)', fontSize: 12 }}>✓</span>
+              <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 14, color: theme.navy, fontWeight: 500 }}>
+                <CheckCircle2 size={18} color={theme.accent} />
                 {f}
               </div>
             ))}
           </div>
-
-          {/* Demo accounts */}
-          {/* <div>
-            <div className="section-label">Demo accounts</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {DEMO_ACCOUNTS.map(a => (
-                <button
-                  key={a.user}
-                  onClick={() => setForm({ username: a.user, password: a.pass })}
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '8px 12px', background: 'var(--bg-surface)', border: '1px solid var(--border)',
-                    borderRadius: 6, cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.1s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--blue)'}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
-                >
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <span className="role-badge">{a.role}</span>
-                    <span style={{ fontSize: 13, color: 'var(--text-primary)', fontFamily: 'monospace' }}>{a.user}</span>
-                  </div>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{a.pass}</span>
-                </button>
-              ))}
-            </div>
-          </div> */}
         </div>
 
-        {/* Right panel: form */}
-        <div className="card" style={{ padding: 28 }}>
-          <h2 style={{ margin: '0 0 4px', fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>Sign in</h2>
-          <p style={{ margin: '0 0 24px', fontSize: 13, color: 'var(--text-muted)' }}>Enter your credentials to continue</p>
+        {/* Right Side: Login Form */}
+        <div style={{ 
+          background: theme.bg, 
+          padding: 32, 
+          borderRadius: 24, 
+          border: `1px solid ${theme.border}` 
+        }}>
+          <div style={{ marginBottom: 32 }}>
+            <h2 style={{ margin: '0 0 8px', fontSize: 22, fontWeight: 800, color: theme.navy, letterSpacing: '-0.02em' }}>Welcome back</h2>
+            <p style={{ margin: 0, fontSize: 14, color: theme.slate }}>Enter your credentials to access the portal</p>
+          </div>
 
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Username</label>
-              <input
-                className="input"
-                placeholder="username"
-                autoComplete="username"
-                value={form.username}
-                onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
-                required
-              />
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: theme.navy, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Username</label>
+              <div style={{ position: 'relative' }}>
+                <User size={16} color={theme.slate} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                <input
+                  style={{ 
+                    width: '100%', 
+                    padding: '12px 14px 12px 42px', 
+                    borderRadius: 12, 
+                    border: `1px solid ${theme.border}`,
+                    fontSize: 14,
+                    outline: 'none',
+                    transition: 'border-color 0.2s',
+                    background: '#fff'
+                  }}
+                  placeholder="Enter your username"
+                  value={form.username}
+                  onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
+                  required
+                />
+              </div>
             </div>
+
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Password</label>
-              <input
-                className="input"
-                type="password"
-                placeholder="••••••••"
-                autoComplete="current-password"
-                value={form.password}
-                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                required
-              />
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: theme.navy, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Password</label>
+              <div style={{ position: 'relative' }}>
+                <Lock size={16} color={theme.slate} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                <input
+                  type="password"
+                  style={{ 
+                    width: '100%', 
+                    padding: '12px 14px 12px 42px', 
+                    borderRadius: 12, 
+                    border: `1px solid ${theme.border}`,
+                    fontSize: 14,
+                    outline: 'none',
+                    transition: 'border-color 0.2s',
+                    background: '#fff'
+                  }}
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                  required
+                />
+              </div>
             </div>
 
             {error && (
-              <div style={{ padding: '8px 12px', background: 'var(--red-muted)', border: '1px solid #4d1a19', borderRadius: 6, color: 'var(--red)', fontSize: 13 }}>
+              <div style={{ 
+                padding: '12px', 
+                background: '#fef2f2', 
+                border: '1px solid #fee2e2', 
+                borderRadius: 10, 
+                color: '#b91c1c', 
+                fontSize: 13,
+                fontWeight: 500
+              }}>
                 {error}
               </div>
             )}
 
-            <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%', padding: '9px', marginTop: 4 }}>
-              {loading ? 'Signing in...' : 'Sign in'}
+            <button 
+              type="submit" 
+              disabled={loading}
+              style={{ 
+                width: '100%', 
+                padding: '14px', 
+                marginTop: 8,
+                background: theme.navy,
+                color: '#fff',
+                border: 'none',
+                borderRadius: 12,
+                fontWeight: 700,
+                fontSize: 15,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                transition: 'all 0.2s'
+              }}
+            >
+              {loading ? 'Authenticating...' : 'Sign In to Portal'}
+              {!loading && <ArrowRight size={18} />}
             </button>
           </form>
 
-          <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--border)', textAlign: 'center' }}>
-            <a href="/careers" style={{ fontSize: 13, color: 'var(--blue)', textDecoration: 'none' }}>
-              Looking for internship opportunities? →
+          <div style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${theme.border}`, textAlign: 'center' }}>
+            <p style={{ margin: '0 0 16px', fontSize: 14, color: theme.slate }}>Are you an applicant?</p>
+            <a href="/careers" style={{ 
+              color: theme.accent, 
+              textDecoration: 'none', 
+              fontSize: 15, 
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4
+            }}>
+              View Open Internships <ChevronRight size={16} />
             </a>
           </div>
         </div>
@@ -148,4 +212,11 @@ export const LoginPage = () => {
   )
 }
 
+const ChevronRight = ({ size, color }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m9 18 6-6-6-6"/>
+  </svg>
+)
+
 export default LoginPage
+

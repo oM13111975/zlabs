@@ -181,7 +181,7 @@ export const ApplicantsPage = () => {
       <Modal open={!!acceptModal} onClose={() => setAcceptModal(null)} title="Accept Application">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>
-            Accept this application to create an intern profile. <strong>Note:</strong> User logins and passwords are created later only during conversion to Team Member or Head.
+            Accept this application to create an intern profile. <strong>Note:</strong> A user account will be created immediately, and an email with login credentials will be sent to the intern.
           </p>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
