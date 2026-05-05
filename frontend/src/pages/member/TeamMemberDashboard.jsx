@@ -4,6 +4,7 @@ import { StatusBadge } from '../../components/StatusBadge'
 import { taskApi, internshipApi, projectApi, teamApi } from '../../api'
 import { toast } from '../../components/Toast'
 import { useAuth } from '../../contexts/AuthContext'
+import { Calendar, Trash2, ArrowRight, Plus } from 'lucide-react'
 
 export const TeamMemberDashboard = () => {
   const { user, role } = useAuth()
@@ -120,7 +121,10 @@ export const TeamMemberDashboard = () => {
                   <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid var(--border-sub)' }}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{t.title}</div>
-                      {t.deadline && <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Due {new Date(t.deadline).toLocaleDateString()}</div>}
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                         <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>By {t.assigned_by?.first_name || 'System'}</span>
+                         {t.deadline && <span>· Due {new Date(t.deadline).toLocaleDateString()}</span>}
+                      </div>
                     </div>
                     <StatusBadge status={t.status} />
                   </div>
@@ -173,7 +177,9 @@ export const TeamMemberDashboard = () => {
                   <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid var(--border-sub)' }}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{t.title}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>→ {t.assigned_to?.first_name} {t.assigned_to?.last_name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <ArrowRight size={10} /> {t.assigned_to?.first_name} {t.assigned_to?.last_name}
+                      </div>
                     </div>
                     <StatusBadge status={t.status} />
                   </div>
@@ -219,17 +225,21 @@ export const TeamMemberDashboard = () => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{m.title}</div>
-                                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                                        📅 {new Date(m.scheduled_at).toLocaleString()} · {m.team_name}
+                                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                        <Calendar size={12} /> {new Date(m.scheduled_at).toLocaleString()} · {m.team_name}
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                     {(user?.id === m.created_by?.id || ['admin', 'super_admin'].includes(role)) && (
-                                        <button onClick={() => handleDeleteMeeting(m.id)} style={{ background: 'none', border: 'none', padding: 0, color: 'var(--red)', cursor: 'pointer', opacity: 0.6, fontSize: 12 }} title="Delete Meeting">🗑️</button>
+                                        <button onClick={() => handleDeleteMeeting(m.id)} style={{ background: 'none', border: 'none', padding: 0, color: 'var(--red)', cursor: 'pointer', opacity: 0.6, display: 'flex', alignItems: 'center' }} title="Delete Meeting">
+                                          <Trash2 size={14} />
+                                        </button>
                                     )}
                                     {m.meeting_link && (
                                         new Date(m.scheduled_at) > new Date() ? (
-                                            <a href={m.meeting_link} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ padding: '4px 8px', fontSize: 11 }}>Join →</a>
+                                            <a href={m.meeting_link} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ padding: '4px 8px', fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                              Join <ArrowRight size={10} />
+                                            </a>
                                         ) : (
                                             <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', background: 'rgba(0,0,0,0.05)', padding: '2px 8px', borderRadius: 4 }}>ENDED</span>
                                         )
@@ -280,7 +290,9 @@ export const TeamMemberDashboard = () => {
                       </div>
                       <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
                           <button type="button" className="btn btn-ghost w-full" onClick={() => setMeetingModal(false)}>Cancel</button>
-                          <button type="submit" className="btn btn-primary w-full">Schedule →</button>
+                          <button type="submit" className="btn btn-primary w-full" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                            Schedule <ArrowRight size={16} />
+                          </button>
                       </div>
                   </form>
               </div>

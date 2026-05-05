@@ -5,6 +5,16 @@ import { Modal } from '../../components/Modal'
 import { FileUpload } from '../../components/FileUpload'
 import { toast } from '../../components/Toast'
 import { taskApi, teamApi, projectApi, authApi } from '../../api'
+import { 
+  Users, 
+  CheckCircle2, 
+  Link, 
+  Folder, 
+  Calendar, 
+  Trash2, 
+  ArrowRight,
+  Plus
+} from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 
 export const TeamHeadDashboard = () => {
@@ -140,9 +150,10 @@ export const TeamHeadDashboard = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
 
-          {/* Team Members breakdown */}
           <div className="card">
-            <h3 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 700 }}>👥 Team Members</h3>
+            <h3 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Users size={18} /> Team Members
+            </h3>
             {!myTeam ? (
               <div style={{ color: '#64748b', fontSize: 13 }}>No team assigned yet</div>
             ) : (myTeam.members || []).length === 0 ? (
@@ -186,8 +197,12 @@ export const TeamHeadDashboard = () => {
           {/* Task list */}
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>✅ Recent Tasks</h3>
-              <a href="/team-head/tasks/projects" style={{ color: '#60a5fa', fontSize: 13, textDecoration: 'none' }}>All tasks →</a>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <CheckCircle2 size={18} /> Recent Tasks
+              </h3>
+              <a href="/team-head/tasks/projects" style={{ color: '#60a5fa', fontSize: 13, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                All tasks <ArrowRight size={14} />
+              </a>
             </div>
             {loading ? <div style={{ color: '#64748b', fontSize: 13 }}>Loading...</div> :
             tasks.length === 0 ? (
@@ -200,11 +215,15 @@ export const TeamHeadDashboard = () => {
                   <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 12px', background: 'var(--bg-raised)', borderRadius: 8 }}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>→ {t.assigned_to?.first_name} {t.assigned_to?.last_name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <ArrowRight size={10} /> {t.assigned_to?.first_name} {t.assigned_to?.last_name}
+                      </div>
                     </div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                       <StatusBadge status={t.status} />
-                      <button onClick={() => copyLink(t)} style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', fontSize: 13 }}>🔗</button>
+                      <button onClick={() => copyLink(t)} style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Copy Link">
+                        <Link size={14} />
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -215,8 +234,12 @@ export const TeamHeadDashboard = () => {
           {/* Projects overview */}
           <div className="card" style={{ gridColumn: '1 / -1' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>🗂 Projects</h3>
-              <a href="/team-head/projects" style={{ color: '#60a5fa', fontSize: 13, textDecoration: 'none' }}>View all →</a>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Folder size={18} /> Projects
+              </h3>
+              <a href="/team-head/projects" style={{ color: '#60a5fa', fontSize: 13, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                View all <ArrowRight size={14} />
+              </a>
             </div>
             {projects.length === 0 ? (
               <div style={{ color: '#64748b', fontSize: 13 }}>No projects assigned to your team</div>
@@ -246,8 +269,12 @@ export const TeamHeadDashboard = () => {
           {/* Upcoming Meetings */}
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>📅 Team Meetings</h3>
-              <button className="btn btn-ghost btn-sm" onClick={() => setMeetingModal(true)} style={{ color: '#60a5fa' }}>+ Schedule</button>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Calendar size={18} /> Team Meetings
+              </h3>
+              <button className="btn btn-ghost btn-sm" onClick={() => setMeetingModal(true)} style={{ color: '#60a5fa', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Plus size={14} /> Schedule
+              </button>
             </div>
             {loading ? <div style={{ color: '#64748b', fontSize: 13 }}>Loading...</div> :
             meetings.length === 0 ? (
@@ -259,13 +286,15 @@ export const TeamHeadDashboard = () => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{m.title}</div>
-                                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                                        📅 {new Date(m.scheduled_at).toLocaleString()} · {m.team_name}
+                                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                        <Calendar size={12} /> {new Date(m.scheduled_at).toLocaleString()} · {m.team_name}
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                     {(user?.id === m.created_by?.id || ['admin', 'super_admin'].includes(role)) && (
-                                        <button onClick={() => handleDeleteMeeting(m.id)} style={{ background: 'none', border: 'none', padding: 0, color: 'var(--red)', cursor: 'pointer', opacity: 0.6, fontSize: 12 }} title="Delete Meeting">🗑️</button>
+                                        <button onClick={() => handleDeleteMeeting(m.id)} style={{ background: 'none', border: 'none', padding: 0, color: 'var(--red)', cursor: 'pointer', opacity: 0.6, display: 'flex', alignItems: 'center' }} title="Delete Meeting">
+                                          <Trash2 size={14} />
+                                        </button>
                                     )}
                                     {m.meeting_link && (
                                         new Date(m.scheduled_at) > new Date() ? (
@@ -314,8 +343,8 @@ export const TeamHeadDashboard = () => {
               </div>
               <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
                   <button type="button" className="btn btn-ghost w-full" onClick={() => setMeetingModal(false)}>Cancel</button>
-                  <button type="submit" className="btn btn-primary w-full" disabled={acting}>
-                      {acting ? 'Scheduling...' : 'Schedule Meeting →'}
+                  <button type="submit" className="btn btn-primary w-full" disabled={acting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                      {acting ? 'Scheduling...' : 'Schedule Meeting'} <ArrowRight size={16} />
                   </button>
               </div>
           </form>

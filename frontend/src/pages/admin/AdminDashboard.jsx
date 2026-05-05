@@ -20,7 +20,9 @@ import {
   UserCheck,
   Zap,
   Clock,
-  FileText
+  FileText,
+  Trash2,
+  X
 } from 'lucide-react'
 
 export const AdminDashboard = () => {
@@ -318,7 +320,9 @@ export const AdminDashboard = () => {
                                 {m.created_by?.full_name || m.created_by?.username}
                             </div>
                             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                                <button onClick={() => handleDeleteMeeting(m.id)} style={{ background: 'none', border: 'none', padding: 0, color: 'var(--red)', cursor: 'pointer', opacity: 0.6, fontSize: 13 }} title="Delete Meeting">🗑️</button>
+                                <button onClick={() => handleDeleteMeeting(m.id)} style={{ background: 'none', border: 'none', padding: 0, color: 'var(--red)', cursor: 'pointer', opacity: 0.6, display: 'flex' }} title="Delete Meeting">
+                                    <Trash2 size={14} />
+                                </button>
                                 {m.meeting_link && (
                                     new Date(m.scheduled_at) > new Date() ? (
                                         <a href={m.meeting_link} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" style={{ padding: '4px 6px', color: 'var(--blue)' }}>
@@ -351,7 +355,7 @@ export const AdminDashboard = () => {
               <div className="modal-content animate-in" style={{ maxWidth: 450 }}>
                   <div className="card-header">
                       <div className="card-title">Schedule System Meeting</div>
-                      <button className="btn btn-ghost btn-sm" onClick={() => setMeetingModal(false)}>✕</button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => setMeetingModal(false)}><X size={16} /></button>
                   </div>
                   <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>This meeting will be visible to all members of the selected team.</p>
                   <form onSubmit={handleCreateMeeting} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -379,8 +383,8 @@ export const AdminDashboard = () => {
                       </div>
                       <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
                           <button type="button" className="btn btn-ghost w-full" onClick={() => setMeetingModal(false)}>Cancel</button>
-                          <button type="submit" className="btn btn-primary w-full" disabled={acting}>
-                              {acting ? 'Processing...' : 'Schedule Meeting →'}
+                          <button type="submit" className="btn btn-primary w-full" disabled={acting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                              {acting ? 'Processing...' : <>Schedule Meeting <ArrowRight size={16} /></>}
                           </button>
                       </div>
                   </form>

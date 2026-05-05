@@ -48,8 +48,13 @@ export const authApi = {
   mentors: () => api.get('/auth/mentors/'),
   users: (params) => api.get('/auth/users/', { params }),
   analytics: () => api.get('/auth/analytics/'),
-  updateMe: (data) => api.patch('/auth/me/', data),
-  updateUser: (id, data) => api.patch(`/auth/users/${id}/`, data),
+  updateMe: (data) => api.patch('/auth/me/', data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+  updateUser: (id, data) => api.patch(`/auth/users/${id}/`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+  userDetail: (id) => api.get(`/auth/users/${id}/`),
   deleteUser: (id) => api.delete(`/auth/users/${id}/`),
 }
 

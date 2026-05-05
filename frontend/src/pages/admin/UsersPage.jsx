@@ -5,6 +5,7 @@ import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
 import { authApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
+import { Edit2, Trash2 } from 'lucide-react'
 
 export const UsersPage = () => {
   const [users, setUsers] = useState([])
@@ -103,19 +104,19 @@ export const UsersPage = () => {
                         {(currentUserRole === 'super_admin' || (currentUserRole === 'admin' && !['admin', 'super_admin'].includes(u.profile?.role))) && (
                           <button 
                               className="btn btn-ghost btn-sm" 
-                              style={{ padding: '0 8px', height: 28, fontSize: 11 }}
+                              style={{ padding: '0 8px', height: 28, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}
                               onClick={() => { setEditingUser(u); setNewRole(u.profile?.role) }}
                           >
-                              ✏️ Edit
+                              <Edit2 size={12} /> Edit
                           </button>
                         )}
                         {(currentUserRole === 'super_admin' || (currentUserRole === 'admin' && !['admin', 'super_admin'].includes(u.profile?.role))) && (
                             <button 
                                 className="btn btn-ghost btn-sm" 
-                                style={{ padding: '0 8px', height: 28, fontSize: 11, color: 'var(--red)' }}
+                                style={{ padding: '0 8px', height: 28, fontSize: 11, color: 'var(--red)', display: 'flex', alignItems: 'center', gap: 4 }}
                                 onClick={() => handleDeleteUser(u.id)}
                             >
-                                🗑️ Delete
+                                <Trash2 size={12} /> Delete
                             </button>
                         )}
                     </div>

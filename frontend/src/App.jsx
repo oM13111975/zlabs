@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 
 // Public pages
 import LoginPage from './pages/LoginPage'
-import { CareersPage } from './pages/CareersPage'
+import CareersPage from './pages/CareersPage'
 import { PublicSubmitPage } from './pages/PublicSubmitPage'
 import { LandingPage } from './pages/LandingPage'
 
@@ -17,10 +17,12 @@ import { ProjectsPage } from './pages/admin/ProjectsPage'
 import { ActivityLogsPage } from './pages/admin/ActivityLogsPage'
 import { UsersPage } from './pages/admin/UsersPage'
 import { MembersPage } from './pages/admin/MembersPage'
+import { MemberProfilePage } from './pages/admin/MemberProfilePage'
 import HierarchyPage from './pages/admin/HierarchyPage'
 
 // Shared
 import { TasksPage } from './pages/TasksPage'
+import { ProfilePage } from './pages/ProfilePage'
 
 // Team Member & Team Head
 import { TeamMemberDashboard } from './pages/member/TeamMemberDashboard'
@@ -64,6 +66,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />
           <Route path="/zportal" element={<LandingPage />} />
           <Route path="/home" element={<HomeRedirect />} />
           <Route path="/careers" element={<CareersPage />} />
@@ -75,6 +78,7 @@ function App() {
           <Route path="/admin/applicants" element={<Protected roles={['admin', 'super_admin']}><ApplicantsPage /></Protected>} />
           <Route path="/admin/interns" element={<Protected roles={['admin', 'super_admin']}><InternsPage /></Protected>} />
           <Route path="/admin/members" element={<Protected roles={['admin', 'super_admin']}><MembersPage /></Protected>} />
+          <Route path="/admin/members/:id" element={<Protected roles={['admin', 'super_admin']}><MemberProfilePage /></Protected>} />
           <Route path="/admin/interns/:id" element={<Protected roles={['admin', 'super_admin']}><InternProfilePage /></Protected>} />
           <Route path="/admin/teams" element={<Protected roles={['admin', 'super_admin']}><TeamsPage /></Protected>} />
           <Route path="/admin/projects" element={<Protected roles={['admin', 'super_admin']}><ProjectsPage /></Protected>} />
@@ -102,6 +106,7 @@ function App() {
           <Route path="/team-head/projects" element={<Protected roles={['team_head']}><ProjectsPage role="team_head" /></Protected>} />
 
           <Route path="/intern-portal" element={<Protected roles={['intern']}><InternDashboard /></Protected>} />
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

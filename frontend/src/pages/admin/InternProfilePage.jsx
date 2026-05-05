@@ -7,6 +7,7 @@ import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
 import { authApi, internshipApi, taskApi, projectApi, teamApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
+import { ArrowLeft, RefreshCw, Mail, FileText, Award, Briefcase, Info, Star, ArrowRight, Folder, CheckCircle2, MapPin, User as UserIcon } from 'lucide-react'
 
 const TEMPLATES = [
   { id: 'custom', label: 'Custom (Write your own)', subject: '', body: '' },
@@ -235,7 +236,7 @@ export const InternProfilePage = () => {
       <TopBar 
         title={intern.user ? `${intern.user.first_name} ${intern.user.last_name}` : intern.application?.name} 
         subtitle={`Intern · ${intern.domain || 'Unassigned'} · Joined ${new Date(intern.joined_at).toLocaleDateString()}`}
-        actions={<button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)}>← Back</button>}
+        actions={<button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: 6 }}><ArrowLeft size={16} /> Back</button>}
       />
       <div className="page slide-up">
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: 24, alignItems: 'start' }}>
@@ -351,18 +352,20 @@ export const InternProfilePage = () => {
                         <thead>
                             <tr>
                                 <th>Task Title</th>
-                                <th>Assigned</th>
+                                <th>Assigned By</th>
+                                <th>Assigned Date</th>
                                 <th>Deadline</th>
                                 <th>Status</th>
                                 <th>Performance</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {tasksLoading ? <tr><td colSpan={5} style={{textAlign: 'center', padding: 20}}>Loading history...</td></tr> :
-                             tasks.length === 0 ? <tr><td colSpan={5} style={{textAlign: 'center', padding: 20, color: 'var(--text-muted)'}}>No tasks yet</td></tr> :
+                            {tasksLoading ? <tr><td colSpan={6} style={{textAlign: 'center', padding: 20}}>Loading history...</td></tr> :
+                             tasks.length === 0 ? <tr><td colSpan={6} style={{textAlign: 'center', padding: 20, color: 'var(--text-muted)'}}>No tasks yet</td></tr> :
                              tasks.map(t => (
                                 <tr key={t.id}>
                                     <td style={{ fontWeight: 600 }}>{t.title}</td>
+                                    <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{t.assigned_by?.full_name || 'System'}</td>
                                     <td>{new Date(t.created_at).toLocaleDateString()}</td>
                                     <td>{t.deadline ? new Date(t.deadline).toLocaleDateString() : '—'}</td>
                                     <td><StatusBadge status={t.status} /></td>
@@ -389,9 +392,28 @@ export const InternProfilePage = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {/* Profile Info Side */}
             <div className="card card-sm">
+                <div className="section-label">Personal Profile</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 10 }}>
+                    {intern.user?.profile?.avatar && (
+                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+                            <img src={intern.user.profile.avatar} alt="Avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--border)' }} />
+                        </div>
+                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
+                        <MapPin size={14} /> {intern.user?.profile?.location || 'No location set'}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                        {intern.user?.profile?.bio || 'No bio provided.'}
+                    </div>
+                </div>
+            </div>
+
+            <div className="card card-sm">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div className="section-label">Quick Stats</div>
-                    <button className="btn btn-ghost btn-sm" onClick={loadIntern} style={{ padding: '0 4px', minWidth: 'unset', height: 24 }} title="Refresh stats">🔄</button>
+                    <button className="btn btn-ghost btn-sm" onClick={loadIntern} style={{ padding: '0 4px', minWidth: 'unset', height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Refresh stats">
+                        <RefreshCw size={12} className={acting ? 'spin' : ''} />
+                    </button>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 10 }}>
                     <div style={{ background: 'var(--bg-raised)', padding: 12, borderRadius: 8 }}>
@@ -424,9 +446,13 @@ export const InternProfilePage = () => {
             <div className="card card-sm">
                 <div className="section-label">Contact & Documents</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 10 }}>
-                    <a href={`mailto:${intern.user ? intern.user.email : intern.application?.email}`} className="btn btn-ghost btn-sm" style={{ justifyContent: 'start' }}>📧 {intern.user ? intern.user.email : intern.application?.email}</a>
+                    <a href={`mailto:${intern.user ? intern.user.email : intern.application?.email}`} className="btn btn-ghost btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Mail size={14} /> {intern.user ? intern.user.email : intern.application?.email}
+                    </a>
                     {intern.application?.resume && (
-                        <a href={intern.application.resume} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ justifyContent: 'start' }}>📄 View PDF Resume</a>
+                        <a href={intern.application.resume} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <FileText size={14} /> View PDF Resume
+                        </a>
                     )}
                 </div>
             </div>
@@ -474,7 +500,9 @@ export const InternProfilePage = () => {
                         transition: 'all 0.3s ease'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                            <div style={{ fontSize: 24 }}>{intern.is_ready_for_team ? '🏆' : '💼'}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: 10, background: intern.is_ready_for_team ? 'var(--green)' : 'var(--blue)', color: 'white' }}>
+                                {intern.is_ready_for_team ? <Award size={20} /> : <Briefcase size={20} />}
+                            </div>
                             <div style={{ flex: 1 }}>
                                 <div className="section-label" style={{ color: intern.is_ready_for_team ? 'var(--green)' : 'var(--text-muted)', marginBottom: 2 }}>
                                     {intern.is_ready_for_team ? 'RECRUITMENT READY' : 'OFFICIAL CONVERSION'}
@@ -611,8 +639,8 @@ export const InternProfilePage = () => {
               <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>Submission Review</div>
               <div style={{ fontSize: 14, color: 'var(--text-primary)', marginBottom: 10 }}>{feedbackModal?.submission?.text_response || 'No text response provided.'}</div>
               {feedbackModal?.submission?.file_upload && (
-                <a href={feedbackModal.submission.file_upload} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', width: '100%', justifyContent: 'start' }}>
-                  📂 View Attached Work (File)
+                <a href={feedbackModal.submission.file_upload} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', width: '100%', justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FileText size={14} /> View Attached Work (File)
                 </a>
               )}
           </div>

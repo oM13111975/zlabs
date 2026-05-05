@@ -25,6 +25,7 @@ const NAV = {
     { to: '/admin/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/admin/hierarchy', label: 'Hierarchy', icon: <Network size={18} /> },
     { to: '/admin/users', label: 'Settings', icon: <User size={18} /> },
+    { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
   team_member: [
     { to: '/team', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
@@ -32,6 +33,7 @@ const NAV = {
     { to: '/team/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
+    { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
   mentor: [
     { to: '/team', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
@@ -39,6 +41,7 @@ const NAV = {
     { to: '/team/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
+    { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
   team_head: [
     { to: '/team-head', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
@@ -47,9 +50,11 @@ const NAV = {
     { to: '/team-head/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team-head/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team-head/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
+    { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
   intern: [
     { to: '/intern-portal', label: 'Intern Portal', icon: <LayoutDashboard size={18} /> },
+    { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
 }
 NAV.super_admin = NAV.admin

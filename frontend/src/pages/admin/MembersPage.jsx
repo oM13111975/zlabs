@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { Layout, TopBar } from '../../components/Layout'
 import { RoleBadge } from '../../components/StatusBadge'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
 import { authApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
+import { Eye, Settings } from 'lucide-react'
 
 export const MembersPage = () => {
   const [users, setUsers] = useState([])
@@ -18,12 +20,10 @@ export const MembersPage = () => {
 
   const loadUsers = () => {
     setLoading(true)
-    // For Members page, we filter out 'intern' by default if no filter is set
     const effectiveRole = roleFilter || 'team_member,mentor,team_head'
     authApi.users({ search, role: effectiveRole })
       .then(r => {
         let data = r.data.results || r.data
-        // Extra safety check to ensure no interns show up here unless explicitly filtered
         if (!roleFilter) {
           data = data.filter(u => u.profile?.role !== 'intern')
         }
@@ -83,11 +83,17 @@ export const MembersPage = () => {
                 <tr key={u.id}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: 'white' }}>
-                        {u.first_name?.[0] || u.username?.[0]?.toUpperCase()}
-                      </div>
+                      {u.profile?.avatar ? (
+                        <img src={u.profile.avatar} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: 'white' }}>
+                          {u.first_name?.[0] || u.username?.[0]?.toUpperCase()}
+                        </div>
+                      )}
                       <div>
-                        <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{u.first_name} {u.last_name}</div>
+                        <Link to={`/admin/members/${u.id}`} style={{ fontWeight: 700, color: 'var(--text-primary)', textDecoration: 'none' }} className="hover-link">
+                          {u.first_name} {u.last_name}
+                        </Link>
                         <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>@{u.username}</div>
                       </div>
                     </div>
@@ -96,13 +102,22 @@ export const MembersPage = () => {
                   <td><RoleBadge role={u.profile?.role} /></td>
                   <td style={{ fontSize: 13, color: 'var(--text-muted)' }}>{u.profile?.phone || '—'}</td>
                   <td>
-                    <button 
-                        className="btn btn-ghost btn-sm" 
-                        style={{ padding: '0 8px', height: 28, fontSize: 11 }}
-                        onClick={() => { setEditingUser(u); setNewRole(u.profile?.role) }}
-                    >
-                        Manage Account
-                    </button>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <Link 
+                          to={`/admin/members/${u.id}`}
+                          className="btn btn-ghost btn-sm" 
+                          style={{ padding: '0 8px', height: 28, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}
+                      >
+                          <Eye size={12} /> Profile
+                      </Link>
+                      <button 
+                          className="btn btn-ghost btn-sm" 
+                          style={{ padding: '0 8px', height: 28, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}
+                          onClick={() => { setEditingUser(u); setNewRole(u.profile?.role) }}
+                      >
+                          <Settings size={12} /> Manage
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

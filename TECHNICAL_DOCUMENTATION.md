@@ -554,20 +554,20 @@ All emails are sent via Django's `send_mail` using SMTP (configurable via `.env`
 
 | Permission | super_admin | admin | team_head | mentor | team_member | intern |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
-| View all applications | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Accept/Reject applications | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| View all interns | ✅ | ✅ | Own only | Own only | Own only | ❌ |
-| Assign mentors | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Convert intern to employee | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Create tasks | ✅ | ✅ | Team only | ✅ | ✅ | ❌ |
+| View all applications | Yes | Yes | No | No | No | No |
+| Accept/Reject applications | Yes | Yes | No | No | No | No |
+| View all interns | Yes | Yes | Own only | Own only | Own only | No |
+| Assign mentors | Yes | Yes | No | No | No | No |
+| Convert intern to employee | Yes | Yes | No | No | No | No |
+| Create tasks | Yes | Yes | Team only | Yes | Yes | No |
 | View tasks | All | All | Team's | Own+assigned | Own only | Token only |
-| Give feedback | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Submit tasks (portal) | — | — | — | ✅ | ✅ | Token |
-| Manage teams | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Manage projects | ✅ | ✅ | Team only | View | View | ❌ |
-| Schedule meetings | ✅ | ✅ | Team only |  View | View | ❌ |
-| View activity logs | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Manage users | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Give feedback | Yes | Yes | Yes | Yes | No | No |
+| Submit tasks (portal) | - | - | - | Yes | Yes | Token |
+| Manage teams | Yes | Yes | No | No | No | No |
+| Manage projects | Yes | Yes | Team only | View | View | No |
+| Schedule meetings | Yes | Yes | Team only |  View | View | No |
+| View activity logs | Yes | Yes | No | No | No | No |
+| Manage users | Yes | Yes | No | No | No | No |
 
 ---
 

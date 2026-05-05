@@ -5,6 +5,7 @@ import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
 import { projectApi, teamApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
+import { Folder, CheckCircle2, ChevronDown } from 'lucide-react'
 
 const ROLE_COLORS = {
   admin: 'var(--red)', mentor: 'var(--amber)', team_head: 'var(--purple)',
@@ -123,7 +124,9 @@ export const ProjectsPage = () => {
           <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: 60 }}>Loading projects...</div>
         ) : projects.length === 0 ? (
           <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: 60 }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🗂</div>
+            <div style={{ marginBottom: 16, color: 'var(--text-muted)', display: 'flex', justifyContent: 'center' }}>
+              <Folder size={48} />
+            </div>
             <p>No projects yet.</p>
           </div>
         ) : (
@@ -139,8 +142,8 @@ export const ProjectsPage = () => {
                 <div key={project.id} className="card" style={{ padding: 0, overflow: 'hidden', borderColor: isExpanded ? 'var(--blue)' : 'var(--border)' }}>
                   {/* Project header */}
                   <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer' }} onClick={() => toggleExpand(project.id)}>
-                    <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--bg-raised)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
-                      {project.status === 'completed' ? '✅' : '📁'}
+                    <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--bg-raised)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: project.status === 'completed' ? 'var(--green)' : 'var(--blue)' }}>
+                      {project.status === 'completed' ? <CheckCircle2 size={24} /> : <Folder size={24} />}
                     </div>
 
                     <div style={{ flex: 1 }}>
@@ -177,7 +180,9 @@ export const ProjectsPage = () => {
                             <button className="btn btn-ghost btn-sm" style={{ color: 'var(--red)' }} onClick={() => deleteProject(project.id)}>Delete</button>
                         </>
                       )}
-                      <div style={{ transform: isExpanded ? 'rotate(180deg)' : 'none', color: 'var(--text-muted)', fontSize: 16 }}>▼</div>
+                      <div style={{ transform: isExpanded ? 'rotate(180deg)' : 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', transition: 'transform 0.3s' }}>
+                        <ChevronDown size={18} />
+                      </div>
                     </div>
                   </div>
 

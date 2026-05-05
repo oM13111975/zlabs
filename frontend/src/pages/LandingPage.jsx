@@ -173,7 +173,7 @@ export const LandingPage = () => {
                     </div>
                     <div className="lp-dash__title-row">
                       <div>
-                        <div className="lp-dash__greeting">Good morning, Admin 👋</div>
+                        <div className="lp-dash__greeting">Good morning, Admin</div>
                         <div className="lp-dash__sub">Evolution Overview · May 2025</div>
                       </div>
                       <div className="lp-dash__report-btn" />
@@ -207,7 +207,7 @@ export const LandingPage = () => {
                       </div>
                       <div className="lp-dash__recent-card">
                         <div className="lp-dash__chart-title">Recent Conversions</div>
-                        {['Intern → Dev', 'Intern → Design', 'Applicant → Intern'].map((r, i) => (
+                        {['Intern - Dev', 'Intern - Design', 'Applicant - Intern'].map((r, i) => (
                           <div key={i} className="lp-dash__row">
                             <div className="lp-dash__row-dot" />
                             <span>{r}</span>

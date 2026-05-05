@@ -4,6 +4,7 @@ import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge } from '../../components/StatusBadge'
 import { internshipApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
+import { ArrowRight } from 'lucide-react'
 
 export const InternsPage = () => {
   const navigate = useNavigate()
@@ -98,7 +99,9 @@ export const InternsPage = () => {
                       )}
                     </td>
                     <td>
-                        <button className="btn btn-ghost btn-sm" onClick={() => handleRowClick(intern.id)}>View Profile →</button>
+                        <button className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => handleRowClick(intern.id)}>
+                            View Profile <ArrowRight size={14} />
+                        </button>
                     </td>
                   </tr>
                 )

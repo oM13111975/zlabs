@@ -48,7 +48,7 @@ class Application(models.Model):
 
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=20, blank=True)
+    phone = models.CharField(max_length=20)
     role_applied_for = models.CharField(
         max_length=50, choices=ROLE_CHOICES, default='dev_intern',
         help_text='Internship role the applicant is applying for'

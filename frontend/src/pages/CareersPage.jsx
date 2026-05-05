@@ -22,7 +22,7 @@ const ROLE_ICONS = {
 export const CareersPage = () => {
   const [positions, setPositions] = useState([])
   const [selectedRole, setSelectedRole] = useState(null)
-  const [form, setForm] = useState({ name: '', email: '', skills: '', cover_letter: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', skills: '', cover_letter: '' })
   const [resume, setResume] = useState(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -262,6 +262,10 @@ export const CareersPage = () => {
                         <label style={{ display: 'block', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, color: '#fff' }}>Email Address</label>
                         <input style={{ width: '100%', padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', outline: 'none' }} type="email" placeholder="john@example.com" value={form.email} onChange={e => setForm(f => ({...f, email: e.target.value}))} required />
                       </div>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, color: '#fff' }}>Phone Number</label>
+                      <input style={{ width: '100%', padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', outline: 'none' }} type="tel" placeholder="+91 12345 67890" value={form.phone} onChange={e => setForm(f => ({...f, phone: e.target.value}))} required />
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, color: '#fff' }}>Core Skills</label>

@@ -6,6 +6,16 @@ import { Modal } from '../components/Modal'
 import { toast } from '../components/Toast'
 import { taskApi, authApi, teamApi, projectApi } from '../api'
 import { FileUpload } from '../components/FileUpload'
+import { 
+  Link, 
+  Send, 
+  Bell, 
+  MessageSquare, 
+  Eye, 
+  File, 
+  Star,
+  Plus
+} from 'lucide-react'
 
 export const TasksPage = ({ role, taskType }) => {
   const [tasks, setTasks] = useState([])
@@ -40,8 +50,15 @@ export const TasksPage = ({ role, taskType }) => {
 
   useEffect(() => { load() }, [filters, taskType])
   useEffect(() => {
-    teamApi.list().then(r => setTeams(r.data.results || r.data))
-    authApi.users().then(r => setUsers(r.data.results || r.data))
+    teamApi.list().then(r => {
+      const tData = r.data.results || r.data
+      setTeams(tData)
+      // Pre-select team if only one is available and none selected
+      if (tData.length === 1 && !taskForm.team) {
+        setTaskForm(prev => ({ ...prev, team: tData[0].id }))
+      }
+    })
+    authApi.users().then(r => setUsers(r.data.results || r.data)).catch(() => setUsers([]))
     projectApi.list().then(r => setProjects(r.data.results || r.data))
   }, [])
 
@@ -154,7 +171,7 @@ export const TasksPage = ({ role, taskType }) => {
             <thead>
               <tr>
                 <th>Task</th>
-                <th>Assignee</th>
+                <th>Assignment</th>
                 <th>Project</th>
                 <th>Deadline</th>
                 <th>Status</th>
@@ -177,8 +194,24 @@ export const TasksPage = ({ role, taskType }) => {
                     </div>
                   </td>
                   <td style={{ fontSize: 12 }}>
-                    <div style={{ fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 140 }}>{task.assignee_name}</div>
-                    <div style={{ fontSize: 10, color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 140 }}>{task.assignee_email}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      {task.assigned_to?.profile?.avatar ? (
+                        <img src={task.assigned_to.profile.avatar} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border)' }} />
+                      ) : (
+                        <div className="avatar avatar-sm" style={{ background: 'var(--blue-muted)', color: 'var(--blue)', fontSize: 10, fontWeight: 700, width: 32, height: 32 }}>
+                            {task.assigned_to?.first_name?.[0] || task.assigned_to?.username?.[0] || '?'}
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 3, overflow: 'hidden' }}>
+                        <div>
+                          <div style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Assignee</div>
+                          <div style={{ fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 120 }}>{task.assignee_name}</div>
+                        </div>
+                        <div style={{ borderTop: '1px dashed var(--border-sub)', paddingTop: 2 }}>
+                          <div style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.02em' }}>By {task.assigned_by?.full_name || 'System'}</div>
+                        </div>
+                      </div>
+                    </div>
                   </td>
                   <td style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
                     <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 120 }}>{task.project_name || '—'}</div>
@@ -202,28 +235,42 @@ export const TasksPage = ({ role, taskType }) => {
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: 4 }}>
-                      {taskType === 'intern' && canManage && <button className="btn btn-ghost btn-sm" onClick={() => copyLink(task)} title="Copy link" style={{ padding: '0 6px', height: 28 }}>🔗</button>}
+                      {taskType === 'intern' && canManage && (
+                        <button className="btn btn-ghost btn-sm" onClick={() => copyLink(task)} title="Copy link" style={{ padding: '0 6px', height: 28, display: 'flex', alignItems: 'center' }}>
+                          <Link size={14} />
+                        </button>
+                      )}
                       
                       {/* Submit button: Only for the assignee and only if pending */}
                       {task.task_type === 'team' && task.status === 'pending' && String(task.assigned_to?.id) === String(user?.id) && (
-                        <button className="btn btn-primary btn-sm" onClick={() => { setSubmitModal(task); setSubmitForm({ text_response: '' }); setSubmitFile(null) }} style={{ padding: '0 8px', fontSize: 11, height: 28 }}>↥ Submit</button>
+                        <button className="btn btn-primary btn-sm" onClick={() => { setSubmitModal(task); setSubmitForm({ text_response: '' }); setSubmitFile(null) }} style={{ padding: '0 8px', fontSize: 11, height: 28, display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Send size={12} /> Submit
+                        </button>
                       )}
 
                       {canManage && (
                         <>
-                          <button className="btn btn-ghost btn-sm" onClick={() => sendReminder(task.id)} title="Send Reminder" style={{ padding: '0 6px', height: 28 }}>⏰</button>
-                          <button className="btn btn-ghost btn-sm" onClick={() => { setFeedbackModal(task); setFeedbackForm({ feedback_text: task.feedback?.feedback_text || '', rating: task.feedback?.rating || 5 }) }} title="Review & Feedback" style={{ padding: '0 8px', fontSize: 11, height: 28 }}>💬 Review</button>
+                          <button className="btn btn-ghost btn-sm" onClick={() => sendReminder(task.id)} title="Send Reminder" style={{ padding: '0 6px', height: 28, display: 'flex', alignItems: 'center' }}>
+                            <Bell size={14} />
+                          </button>
+                          <button className="btn btn-ghost btn-sm" onClick={() => { setFeedbackModal(task); setFeedbackForm({ feedback_text: task.feedback?.feedback_text || '', rating: task.feedback?.rating || 5 }) }} title="Review & Feedback" style={{ padding: '0 8px', fontSize: 11, height: 28, display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <MessageSquare size={12} /> Review
+                          </button>
                         </>
                       )}
                       
                       {/* Members can view their own submission results */}
                       {!canManage && String(task.assigned_to?.id) === String(user?.id) && task.submission && (
-                         <button className="btn btn-ghost btn-sm" onClick={() => setFeedbackModal(task)} style={{ padding: '0 8px', fontSize: 11, height: 28 }}>👁 View</button>
+                         <button className="btn btn-ghost btn-sm" onClick={() => setFeedbackModal(task)} style={{ padding: '0 8px', fontSize: 11, height: 28, display: 'flex', alignItems: 'center', gap: 4 }}>
+                           <Eye size={12} /> View
+                         </button>
                       )}
                       
                       {/* Anyone assigned or managing can log work */}
                       {(canManage || String(task.assigned_to?.id) === String(user?.id)) && (
-                        <button className="btn btn-ghost btn-sm" onClick={() => setLogModal(task)} style={{ padding: '0 8px', fontSize: 11, height: 28 }}>+ Log</button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setLogModal(task)} style={{ padding: '0 8px', fontSize: 11, height: 28, display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Plus size={12} /> Log
+                        </button>
                       )}
                     </div>
                   </td>
@@ -249,20 +296,38 @@ export const TasksPage = ({ role, taskType }) => {
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Assignee *</label>
               <select className="input" value={taskForm.assigned_to_id} onChange={e => setTaskForm(f => ({ ...f, assigned_to_id: e.target.value }))} required>
                 <option value="">Select user...</option>
-                {users
-                  .filter(u => {
-                     if (role === 'team_head') {
-                        // If a specific team is selected in the form, only show its members
-                        if (taskForm.team) {
-                            const selectedTeam = teams.find(t => String(t.id) === String(taskForm.team))
-                            return selectedTeam?.members?.some(m => m.id === u.id)
-                        }
-                        // Otherwise show members of ALL teams this head leads
-                        return teams.some(t => t.members?.some(m => m.id === u.id))
-                     }
-                     return true
-                  })
-                  .map(u => <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.profile?.role})</option>)}
+                {(() => {
+                    let availableUsers = []
+                    if (taskForm.team) {
+                        const selectedTeam = teams.find(t => String(t.id) === String(taskForm.team))
+                        availableUsers = selectedTeam?.members || []
+                    } else if (role === 'team_head') {
+                        // Combine members of all teams this head leads
+                        const allMembers = []
+                        const seen = new Set()
+                        teams.forEach(t => {
+                            t.members?.forEach(m => {
+                                if (!seen.has(m.id)) {
+                                    seen.add(m.id)
+                                    allMembers.push(m)
+                                }
+                            })
+                        })
+                        availableUsers = allMembers
+                    } else {
+                        // Fallback to the users list (for admins who can see all)
+                        availableUsers = users.map(u => ({
+                            id: u.id,
+                            full_name: `${u.first_name} ${u.last_name}`,
+                            role: u.profile?.role
+                        }))
+                    }
+                    return availableUsers.map(u => (
+                        <option key={u.id} value={u.id}>
+                            {u.full_name || u.username} ({u.role?.replace(/_/g, ' ') || 'member'})
+                        </option>
+                    ))
+                })()}
               </select>
             </div>
             <div>
@@ -306,8 +371,8 @@ export const TasksPage = ({ role, taskType }) => {
               <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>Submission Review</div>
               <div style={{ fontSize: 14, color: 'var(--text-primary)', marginBottom: 10 }}>{feedbackModal?.submission?.text_response || 'No text response provided.'}</div>
               {feedbackModal?.submission?.file_upload && (
-                <a href={feedbackModal.submission.file_upload} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', width: '100%', justifyContent: 'start' }}>
-                  📂 View Attached Work (File)
+                <a href={feedbackModal.submission.file_upload} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', width: '100%', justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <File size={16} /> View Attached Work (File)
                 </a>
               )}
           </div>
@@ -320,10 +385,12 @@ export const TasksPage = ({ role, taskType }) => {
                 </div>
                 <div>
                     <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Rating</label>
-                    <div style={{ display: 'flex', gap: 10 }}>
+                    <div style={{ display: 'flex', gap: 6 }}>
                     {[1,2,3,4,5].map(n => (
-                        <button key={n} type="button" className={`btn ${feedbackForm.rating >= n ? 'btn-primary' : 'btn-ghost'} btn-sm`} style={{ flex: 1 }}
-                        onClick={() => setFeedbackForm(f => ({ ...f, rating: n }))}>{'★'.repeat(n)}</button>
+                        <button key={n} type="button" className={`btn ${feedbackForm.rating >= n ? 'btn-primary' : 'btn-ghost'} btn-sm`} style={{ flex: 1, padding: '4px 0' }}
+                        onClick={() => setFeedbackForm(f => ({ ...f, rating: n }))}>
+                          <Star size={14} fill={feedbackForm.rating >= n ? "currentColor" : "none"} />
+                        </button>
                     ))}
                     </div>
                 </div>
@@ -335,7 +402,9 @@ export const TasksPage = ({ role, taskType }) => {
               <div style={{ padding: 12, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--blue)', marginBottom: 4 }}>Mentor Feedback</div>
                   <div style={{ fontSize: 14 }}>{feedbackModal.feedback.feedback_text}</div>
-                  <div style={{ marginTop: 8, color: 'var(--orange)' }}>{'★'.repeat(feedbackModal.feedback.rating)}</div>
+                  <div style={{ marginTop: 8, color: 'var(--orange)', display: 'flex', gap: 2 }}>
+                    {[...Array(feedbackModal.feedback.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                  </div>
               </div>
           )}
 

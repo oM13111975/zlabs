@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Layout, TopBar } from '../../components/Layout'
 import { internshipApi } from '../../api'
 import { toast } from '../../components/Toast'
+import { CheckCircle2, Award, UserPlus, GraduationCap, ArrowRight } from 'lucide-react'
 
 export const MentorDashboard = () => {
   const [interns, setInterns] = useState([])
@@ -43,7 +44,9 @@ export const MentorDashboard = () => {
         {loading ? <div style={{ color: '#64748b' }}>Loading...</div> :
         interns.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: 40 }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>👨‍🏫</div>
+            <div style={{ color: 'var(--blue)', marginBottom: 16, display: 'flex', justifyContent: 'center' }}>
+              <GraduationCap size={48} />
+            </div>
             <p style={{ color: '#64748b' }}>No interns assigned to you yet. Contact the admin.</p>
           </div>
         ) : (
@@ -75,14 +78,14 @@ export const MentorDashboard = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>
                       {intern.is_ready_for_team
-                        ? <span style={{ fontSize: 12, color: '#34d399' }}>✓ Ready for team</span>
+                        ? <span style={{ fontSize: 12, color: '#34d399', display: 'flex', alignItems: 'center', gap: 4 }}><CheckCircle2 size={12} /> Ready for team</span>
                         : intern.converted_at
-                          ? <span style={{ fontSize: 12, color: '#a78bfa' }}>✓ Converted</span>
+                          ? <span style={{ fontSize: 12, color: '#a78bfa', display: 'flex', alignItems: 'center', gap: 4 }}><Award size={12} /> Converted</span>
                           : <span style={{ fontSize: 12, color: '#64748b' }}>In progress</span>}
                     </span>
                     {!intern.is_ready_for_team && !intern.converted_at && (
-                      <button className="btn btn-success btn-sm" onClick={() => markReady(intern.id)}>
-                        Mark Ready →
+                      <button className="btn btn-success btn-sm" onClick={() => markReady(intern.id)} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        Mark Ready <ArrowRight size={14} />
                       </button>
                     )}
                   </div>

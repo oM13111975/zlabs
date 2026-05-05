@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { ArrowRight, Lock, User, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, Lock, User, CheckCircle2, ChevronRight } from 'lucide-react'
 
 export const LoginPage = () => {
   const { login } = useAuth()
@@ -211,12 +211,6 @@ export const LoginPage = () => {
     </div>
   )
 }
-
-const ChevronRight = ({ size, color }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m9 18 6-6-6-6"/>
-  </svg>
-)
 
 export default LoginPage
 

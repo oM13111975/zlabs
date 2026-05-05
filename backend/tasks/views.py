@@ -35,10 +35,10 @@ class TaskListCreateView(generics.ListCreateAPIView):
             # Members/Mentors see:
             # 1. Any task they created/assigned (assigned_by=user)
             # 2. Project tasks assigned specifically to them (assigned_to=user AND task_type='team')
-            # They should NOT see tasks where they are the 'assigned_to' if it's an 'intern' task (remnants of their own internship)
+            # We strictly exclude tasks that were assigned as intern tasks (via assigned_intern)
             qs = qs.filter(
                 Q(assigned_by=user) | 
-                (Q(assigned_to=user) & Q(task_type='team'))
+                (Q(assigned_to=user) & Q(task_type='team') & Q(assigned_intern__isnull=True))
             ).distinct()
         elif role == 'team_head':
             from teams.models import TeamMembership
@@ -84,6 +84,10 @@ class TaskListCreateView(generics.ListCreateAPIView):
         task_type_filter = self.request.query_params.get('task_type')
         if task_type_filter:
             qs = qs.filter(task_type=task_type_filter)
+            # If we are specifically looking for project tasks (team tasks),
+            # exclude tasks that were assigned as intern tasks (via assigned_intern)
+            if task_type_filter == 'team':
+                qs = qs.filter(assigned_intern__isnull=True)
 
         return qs.distinct()
 

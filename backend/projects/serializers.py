@@ -66,11 +66,11 @@ class ProjectSerializer(serializers.ModelSerializer):
     # Removed get_members SerializerMethodField as it's now a direct field
 
     def get_task_list(self, obj):
-        tasks = Task.objects.filter(project=obj).select_related('assigned_to')
+        tasks = Task.objects.filter(project=obj, task_type='team').select_related('assigned_to')
         return ProjectTaskSerializer(tasks, many=True).data
 
     def get_task_counts(self, obj):
-        tasks = Task.objects.filter(project=obj)
+        tasks = Task.objects.filter(project=obj, task_type='team')
         return {
             'total': tasks.count(),
             'pending': tasks.filter(status='pending').count(),
