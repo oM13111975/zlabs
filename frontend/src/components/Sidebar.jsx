@@ -1,4 +1,6 @@
+import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
+import { chatApi } from '../api'
 import { useAuth } from '../contexts/AuthContext'
 import { 
   LayoutDashboard, 
@@ -10,7 +12,8 @@ import {
   Hammer, 
   User,
   Network,
-  LogOut
+  LogOut,
+  MessageSquare
 } from 'lucide-react'
 
 const NAV = {
@@ -25,6 +28,7 @@ const NAV = {
     { to: '/admin/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/admin/hierarchy', label: 'Hierarchy', icon: <Network size={18} /> },
     { to: '/admin/users', label: 'Settings', icon: <User size={18} /> },
+    { to: '/chat', label: 'Team Chat', icon: <MessageSquare size={18} /> },
     { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
   team_member: [
@@ -33,6 +37,7 @@ const NAV = {
     { to: '/team/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
+    { to: '/chat', label: 'Team Chat', icon: <MessageSquare size={18} /> },
     { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
   mentor: [
@@ -41,6 +46,7 @@ const NAV = {
     { to: '/team/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
+    { to: '/chat', label: 'Team Chat', icon: <MessageSquare size={18} /> },
     { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
   team_head: [
@@ -50,6 +56,7 @@ const NAV = {
     { to: '/team-head/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team-head/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team-head/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
+    { to: '/chat', label: 'Team Chat', icon: <MessageSquare size={18} /> },
     { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
   intern: [
@@ -68,9 +75,36 @@ const ROLE_LABELS = {
   intern: 'Intern',
 }
 
+import { toast } from './Toast'
+
 export const Sidebar = () => {
   const { user, role, logout } = useAuth()
   const links = NAV[role] || []
+  const [totalUnread, setTotalUnread] = useState(0)
+  const prevUnreadRef = React.useRef(0)
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchUnread = async () => {
+      try {
+        const res = await chatApi.getGroups();
+        const loadedGroups = res.data?.results || res.data || [];
+        const unread = loadedGroups.reduce((acc, g) => acc + (g.unread_count || 0), 0);
+        
+        if (unread > prevUnreadRef.current && window.location.pathname !== '/chat') {
+          toast.info('New message in Team Chat!');
+        }
+        prevUnreadRef.current = unread;
+        setTotalUnread(unread);
+      } catch (err) {
+        console.error('Failed to fetch unread count', err);
+      }
+    };
+    
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 10000); // Poll every 10 seconds globally
+    return () => clearInterval(interval);
+  }, [user]);
 
   const initials = user?.first_name
     ? `${user.first_name[0]}${user.last_name?.[0] || ''}`.toUpperCase()
@@ -87,8 +121,12 @@ export const Sidebar = () => {
 
       <div style={{ padding: '16px 16px 12px', borderBottom: '1px solid var(--border-sub)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px', borderRadius: 10, background: 'var(--bg-raised)' }}>
-          <div className="avatar avatar-sm" style={{ background: '#fff', color: 'var(--blue)', border: '1px solid var(--border)', fontWeight: 800, fontSize: 10 }}>
-            {initials}
+          <div className="avatar avatar-sm" style={{ background: '#fff', color: 'var(--blue)', border: '1px solid var(--border)', fontWeight: 800, fontSize: 10, overflow: 'hidden' }}>
+            {user?.profile?.avatar ? (
+              <img src={user.profile.avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              initials
+            )}
           </div>
           <div style={{ overflow: 'hidden' }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -110,8 +148,16 @@ export const Sidebar = () => {
             end={link.to.split('/').length <= 2}
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
           >
-            <span style={{ fontSize: 14, width: 22 }}>{link.icon}</span>
-            <span>{link.label}</span>
+            <span style={{ fontSize: 14, width: 22, display: 'flex', alignItems: 'center' }}>{link.icon}</span>
+            <span style={{ flex: 1 }}>{link.label}</span>
+            {link.to === '/chat' && totalUnread > 0 && (
+              <span style={{ 
+                background: 'var(--blue)', color: 'white', fontSize: 10, 
+                padding: '2px 6px', borderRadius: 10, fontWeight: 'bold' 
+              }}>
+                {totalUnread > 99 ? '99+' : totalUnread}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>

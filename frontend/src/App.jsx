@@ -23,6 +23,7 @@ import HierarchyPage from './pages/admin/HierarchyPage'
 // Shared
 import { TasksPage } from './pages/TasksPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { ChatPage } from './pages/ChatPage'
 
 // Team Member & Team Head
 import { TeamMemberDashboard } from './pages/member/TeamMemberDashboard'
@@ -67,6 +68,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />
+          <Route path="/chat" element={<Protected><ChatPage /></Protected>} />
           <Route path="/zportal" element={<LandingPage />} />
           <Route path="/home" element={<HomeRedirect />} />
           <Route path="/careers" element={<CareersPage />} />

@@ -11,4 +11,5 @@ urlpatterns = [
     path('api/teams/', include('teams.urls')),
     path('api/projects/', include('projects.urls')),
     path('api/activity-logs/', include('activity_logs.urls')),
+    path('api/chat/', include('chat.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

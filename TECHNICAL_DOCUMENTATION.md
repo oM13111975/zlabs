@@ -40,12 +40,15 @@ ZLabs Portal is a full-stack internal management platform build for Zeex Labs th
 |---|---|---|---|
 | Framework | **Django** | >= 6.0 | Web framework, ORM, admin panel |
 | API | **Django REST Framework** | >= 3.17 | REST API endpoints and serialization |
+| WebSockets | **Django Channels / Daphne** | >= 4.0 | Real-time chat infrastructure |
 | Auth | **SimpleJWT** | >= 5.5 | JWT token-based authentication |
 | CORS | **django-cors-headers** | >= 4.9 | Cross-origin request handling |
 | Environment | **django-environ** | >= 0.11.0 | `.env` file variable management |
 | Image Processing | **Pillow** | >= 12.0 | Avatar and image uploads |
 | Runtime | **Python** | 3.10+ | Language runtime |
 | Database (Dev) | **SQLite** | — | Local development database |
+| Database (Prod) | **PostgreSQL** | 14+ | Production database (recommended) |
+| Message Broker | **Redis** | — | Required for Channels in Production (`USE_REDIS=True`) |
 | Database (Prod) | **PostgreSQL** | 14+ | Production database (recommended) |
 | File Storage (Dev) | **Local filesystem** | — | `/media/` directory |
 | File Storage (Prod) | **AWS S3** | — | Recommended for production |

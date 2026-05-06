@@ -132,3 +132,15 @@ export const projectApi = {
 export const logApi = {
   list: (params) => api.get('/activity-logs/', { params }),
 }
+
+// ── Chat ───────────────────────────────────────────────────────────────────────
+export const chatApi = {
+  getGroups: () => api.get(`/chat/groups/?t=${Date.now()}`),
+  getMessages: (groupId) => api.get(`/chat/groups/${groupId}/messages/`),
+  getOrCreate: (data) => api.post('/chat/groups/get_or_create/', data),
+  markRead: (groupId) => api.post(`/chat/groups/${groupId}/mark_read/`),
+  sendMessageWithFile: (groupId, formData) => api.post(`/chat/groups/${groupId}/messages/`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+}
+
