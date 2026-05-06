@@ -114,6 +114,19 @@ class AnalyticsView(APIView):
         from projects.models import Project
         from django.db.models import Count
 
+        # Monthly trend (Last 6 Months)
+        from django.utils import timezone
+        from datetime import timedelta
+        monthly_tasks = []
+        curr = timezone.now()
+        for i in range(5, -1, -1):
+            # Calculate start and end of month
+            first_day = (curr.replace(day=1) - timedelta(days=30 * i)).replace(day=1)
+            # This is a bit rough but works for trend visualization
+            month_label = first_day.strftime('%b')
+            count = Task.objects.filter(created_at__year=first_day.year, created_at__month=first_day.month).count()
+            monthly_tasks.append({'month': month_label, 'count': count})
+
         data = {
             'total_users': User.objects.count(),
             'total_interns': InternProfile.objects.count(),
@@ -126,6 +139,7 @@ class AnalyticsView(APIView):
             'ready_for_team': InternProfile.objects.filter(is_ready_for_team=True, converted_at__isnull=True).count(),
             'converted_interns': InternProfile.objects.filter(converted_at__isnull=False).count(),
             'users_by_role': {x['profile__role']: x['count'] for x in User.objects.values('profile__role').annotate(count=Count('id'))},
+            'monthly_tasks': monthly_tasks
         }
 
         return Response(data)
