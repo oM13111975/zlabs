@@ -6,7 +6,7 @@ from .models import UserProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'role', 'phone', 'bio', 'avatar', 'location', 'created_at']
+        fields = ['id', 'role', 'phone', 'bio', 'skills', 'avatar', 'resume', 'location', 'is_direct_enroll', 'created_at']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -63,10 +63,12 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source='profile.bio', required=False, allow_blank=True)
     location = serializers.CharField(source='profile.location', required=False, allow_blank=True)
     avatar = serializers.ImageField(source='profile.avatar', required=False)
+    resume = serializers.FileField(source='profile.resume', required=False)
+    skills = serializers.CharField(source='profile.skills', required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'role', 'phone', 'bio', 'location', 'avatar']
+        fields = ['first_name', 'last_name', 'email', 'role', 'phone', 'bio', 'location', 'avatar', 'resume', 'skills']
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', {})

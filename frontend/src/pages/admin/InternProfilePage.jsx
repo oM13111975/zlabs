@@ -449,10 +449,16 @@ export const InternProfilePage = () => {
                     <a href={`mailto:${intern.user ? intern.user.email : intern.application?.email}`} className="btn btn-ghost btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
                         <Mail size={14} /> {intern.user ? intern.user.email : intern.application?.email}
                     </a>
-                    {intern.application?.resume && (
+                    {intern.application?.resume ? (
                         <a href={intern.application.resume} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <FileText size={14} /> View PDF Resume
+                            <FileText size={14} /> View Application Resume
                         </a>
+                    ) : intern.user?.profile?.resume ? (
+                        <a href={intern.user.profile.resume} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <FileText size={14} /> View Enrollment Resume
+                        </a>
+                    ) : (
+                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>No resume uploaded</span>
                     )}
                 </div>
             </div>
@@ -468,7 +474,7 @@ export const InternProfilePage = () => {
                                 <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{intern.mentor.email}</div>
                             </div>
                         </div>
-                    ) : (role === 'admin' ? (
+                    ) : (['admin', 'super_admin'].includes(role) ? (
                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                              <select 
                                 className="input input-sm" 
@@ -485,7 +491,7 @@ export const InternProfilePage = () => {
                              <p style={{ fontSize: 10, color: 'var(--text-muted)', margin: 0 }}>Select a mentor to assign to this intern</p>
                          </div>
                     ) : (
-                         <div style={{ color: 'var(--red)', fontSize: 13 }}>No mentor unassigned</div>
+                         <div style={{ color: 'var(--red)', fontSize: 13 }}>No mentor assigned</div>
                     ))}
                 </div>
             </div>

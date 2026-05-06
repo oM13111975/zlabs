@@ -203,6 +203,11 @@ export const MemberProfilePage = () => {
                 <a href={`mailto:${member.email}`} className="btn btn-ghost btn-sm" style={{ justifyContent: 'start', width: '100%' }}>
                   <Mail size={14} /> Send Email
                 </a>
+                {member.profile?.resume && (
+                  <a href={member.profile.resume} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ justifyContent: 'start', width: '100%', color: 'var(--blue)' }}>
+                    <Briefcase size={14} /> View Resume
+                  </a>
+                )}
               </div>
             </div>
           </div>

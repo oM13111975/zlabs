@@ -56,6 +56,12 @@ export const authApi = {
   }),
   userDetail: (id) => api.get(`/auth/users/${id}/`),
   deleteUser: (id) => api.delete(`/auth/users/${id}/`),
+  enroll: (data) => api.post('/auth/enroll/', data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+  enrollScan: (data) => api.post('/auth/enroll/scan/', data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
 }
 
 // ── Internships ────────────────────────────────────────────────────────────────

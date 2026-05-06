@@ -19,6 +19,7 @@ import { UsersPage } from './pages/admin/UsersPage'
 import { MembersPage } from './pages/admin/MembersPage'
 import { MemberProfilePage } from './pages/admin/MemberProfilePage'
 import HierarchyPage from './pages/admin/HierarchyPage'
+import { EnrollPage } from './pages/admin/EnrollPage'
 
 // Shared
 import { TasksPage } from './pages/TasksPage'
@@ -89,6 +90,7 @@ function App() {
           <Route path="/admin/users" element={<Protected roles={['admin', 'super_admin']}><UsersPage /></Protected>} />
           <Route path="/admin/hierarchy" element={<Protected roles={['admin', 'super_admin']}><HierarchyPage /></Protected>} />
           <Route path="/admin/logs" element={<Protected roles={['admin', 'super_admin']}><ActivityLogsPage /></Protected>} />
+          <Route path="/admin/enroll" element={<Protected roles={['admin', 'super_admin']}><EnrollPage /></Protected>} />
 
           {/* ── Team Member / Mentor ───────────────────────────────── */}
           <Route path="/team" element={<Protected roles={['team_member', 'mentor']}><TeamMemberDashboard /></Protected>} />

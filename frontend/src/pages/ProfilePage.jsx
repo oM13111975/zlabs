@@ -3,8 +3,7 @@ import { Layout, TopBar } from '../components/Layout'
 import { useAuth } from '../contexts/AuthContext'
 import { authApi } from '../api'
 import { toast } from '../components/Toast'
-import { FileUpload } from '../components/FileUpload'
-import { User, MapPin, Phone, Mail, Save, Camera, Shield } from 'lucide-react'
+import { User, MapPin, Phone, Mail, Save, Camera, Shield, FileText } from 'lucide-react'
 
 export const ProfilePage = () => {
   const { user: currentUser, setUser } = useAuth()
@@ -18,6 +17,7 @@ export const ProfilePage = () => {
     location: '',
   })
   const [avatar, setAvatar] = useState(null)
+  const [resume, setResume] = useState(null)
   const [preview, setPreview] = useState(null)
 
   useEffect(() => {
@@ -51,6 +51,7 @@ export const ProfilePage = () => {
     const fd = new FormData()
     Object.entries(formData).forEach(([k, v]) => fd.append(k, v))
     if (avatar) fd.append('avatar', avatar)
+    if (resume) fd.append('resume', resume)
 
     try {
       const response = await authApi.updateMe(fd)
@@ -139,6 +140,52 @@ export const ProfilePage = () => {
                     <textarea className="input" rows={3} value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} placeholder="Tell us a bit about yourself..." />
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 32 }}>
+              <label className="section-label">Professional Documents</label>
+              <div style={{ padding: 24, background: 'var(--bg-elevated)', borderRadius: 12, border: '1px dashed var(--border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--blue-muted)', color: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <FileText size={20} />
+                    </div>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 700 }}>Curriculum Vitae (Resume)</h4>
+                      <p style={{ margin: 0, fontSize: 12, color: 'var(--text-muted)' }}>Upload your latest resume in PDF format</p>
+                    </div>
+                  </div>
+                  <div>
+                    {currentUser?.profile?.resume ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <a 
+                          href={currentUser.profile.resume} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="btn btn-ghost btn-sm"
+                          style={{ color: 'var(--blue)' }}
+                        >
+                          View Current Resume
+                        </a>
+                        <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer' }}>
+                          Replace
+                          <input type="file" hidden accept=".pdf,.doc,.docx" onChange={e => setResume(e.target.files[0])} />
+                        </label>
+                      </div>
+                    ) : (
+                      <label className="btn btn-primary btn-sm" style={{ cursor: 'pointer' }}>
+                        {resume ? resume.name : 'Upload Resume'}
+                        <input type="file" hidden accept=".pdf,.doc,.docx" onChange={e => setResume(e.target.files[0])} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+                {resume && (
+                  <div style={{ marginTop: 12, fontSize: 12, color: 'var(--blue)', fontWeight: 500 }}>
+                    Selected for upload: {resume.name}
+                  </div>
+                )}
               </div>
             </div>
 

@@ -16,8 +16,11 @@ class UserProfile(models.Model):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='intern')
     phone = models.CharField(max_length=20, blank=True)
     bio = models.TextField(blank=True)
+    skills = models.TextField(blank=True, help_text='Comma-separated skills')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    resume = models.FileField(upload_to='resumes/', blank=True, null=True)
     location = models.CharField(max_length=200, blank=True)
+    is_direct_enroll = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

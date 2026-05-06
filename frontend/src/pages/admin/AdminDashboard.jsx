@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Layout, TopBar } from '../../components/Layout'
 import { authApi, internshipApi, taskApi, teamApi } from '../../api'
 import { 
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react'
 
 export const AdminDashboard = () => {
+  const navigate = useNavigate()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [taskChart, setTaskChart] = useState([])
@@ -108,6 +110,9 @@ export const AdminDashboard = () => {
         subtitle="Platform-wide oversight and management"
         actions={
           <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={() => navigate('/admin/enroll')} className="btn btn-outline btn-sm">
+               <UserPlus size={14} style={{ marginRight: 6 }} /> Direct Enroll
+            </button>
             <a href="/admin/applicants" className="btn btn-primary btn-sm">
                Review Pending Applications ({s.pending_applications || 0}) <ArrowRight size={14} style={{ marginLeft: 6 }} />
             </a>
