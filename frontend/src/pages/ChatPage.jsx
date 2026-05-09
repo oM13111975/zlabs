@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { chatApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
-import { Send, Hash, Users, FolderKanban, Loader2, Menu, Search, X, MessageSquare, Paperclip, File } from 'lucide-react';
+import { Send, Hash, Users, FolderKanban, Loader2, Menu, Search, X, MessageSquare, Paperclip, File, ArrowLeft } from 'lucide-react';
 import { Layout, TopBar } from '../components/Layout';
 import { Modal } from '../components/Modal';
 
@@ -168,7 +168,7 @@ export const ChatPage = () => {
     <Layout>
       <TopBar title="Team Chat" subtitle="Real-time communication across projects and teams" />
       <div className="page animate-in" style={{ padding: 0, height: 'calc(100vh - 100px)' }}>
-        <div className="chat-container">
+        <div className={`chat-container ${activeGroupId ? 'has-active-chat' : ''}`}>
             {/* Chat Sidebar */}
             <div className={`chat-sidebar ${mobileMenuOpen ? 'open' : ''}`} style={{ width: '230px' }}>
               <div className="chat-sidebar-header" style={{ borderBottom: 'none', paddingBottom: '8px' }}>
@@ -249,8 +249,8 @@ export const ChatPage = () => {
               {activeGroupId ? (
                 <>
                   <div className="chat-header">
-                    <button className="chat-mobile-toggle" onClick={() => setMobileMenuOpen(true)}>
-                      <Menu size={20} />
+                    <button className="chat-mobile-toggle" onClick={() => setActiveGroupId(null)}>
+                      <ArrowLeft size={20} />
                     </button>
                     <div className="chat-header-info">
                       <h2>{activeGroup?.name}</h2>
