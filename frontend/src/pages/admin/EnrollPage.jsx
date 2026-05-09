@@ -162,6 +162,9 @@ export const EnrollPage = () => {
     setProcessing(false)
     toast.success('Bulk enrollment completed!')
     fetchHistory()
+    setTimeout(() => {
+      window.location.reload()
+    }, 1000)
   }
 
   const copyToClipboard = (text) => {

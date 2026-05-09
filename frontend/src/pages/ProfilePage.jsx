@@ -57,6 +57,9 @@ export const ProfilePage = () => {
       const response = await authApi.updateMe(fd)
       setUser(response.data)
       toast.success('Profile updated successfully!')
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
     } catch (err) {
       const msg = err.response?.data?.email?.[0] || err.response?.data?.detail || 'Failed to update profile'
       toast.error(msg)
