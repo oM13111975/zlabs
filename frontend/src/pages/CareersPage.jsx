@@ -109,7 +109,7 @@ export const CareersPage = () => {
         </div>
       </header>
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 40px' }}>
+      <div className="careers-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 40px' }}>
         
         {/* ────────── HERO ────────── */}
         <section style={{ textAlign: 'center', padding: '100px 0 80px' }}>
@@ -117,7 +117,7 @@ export const CareersPage = () => {
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
             {positions.length} Open Internship Roles
           </div>
-          <h1 style={{ fontSize: 64, fontWeight: 900, letterSpacing: '-0.05em', marginBottom: 24, lineHeight: 1.0 }}>
+          <h1 className="careers-h1" style={{ fontSize: 64, fontWeight: 900, letterSpacing: '-0.05em', marginBottom: 24, lineHeight: 1.0 }}>
             Start your professional <br/> <em style={{ fontStyle: 'normal', color: theme.accent }}>chapter at ZLabs.</em>
           </h1>
           <p style={{ fontSize: 18, color: theme.slate, maxWidth: 600, margin: '0 auto 40px', lineHeight: 1.7 }}>
@@ -142,7 +142,7 @@ export const CareersPage = () => {
         </section>
 
         {/* ────────── PERKS (No Emojis) ────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 100 }}>
+        <div className="perks-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 100 }}>
           {[
             { icon: Users, t: '1-on-1 Mentorship', d: 'Paired with a senior from day one' },
             { icon: Rocket, t: 'Real Impact', d: 'Work on live products, not exercises' },
@@ -177,7 +177,7 @@ export const CareersPage = () => {
             <div style={{ fontSize: 14, color: theme.slate, fontWeight: 500 }}>Showing {positions.length} active roles</div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div className="careers-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {posLoading ? (
               [1, 2, 3].map(n => <div key={n} style={{ height: 200, background: theme.bg, borderRadius: 20 }} />)
             ) : positions.length > 0 ? (
