@@ -77,7 +77,9 @@ const ROLE_LABELS = {
 
 import { toast } from './Toast'
 
-export const Sidebar = () => {
+import { Menu, X } from 'lucide-react'
+
+export const Sidebar = ({ isOpen, onClose }) => {
   const { user, role, logout } = useAuth()
   const links = NAV[role] || []
   const [totalUnread, setTotalUnread] = useState(0)
@@ -111,12 +113,16 @@ export const Sidebar = () => {
     : user?.username?.[0]?.toUpperCase() || 'U'
 
   return (
-    <div className="sidebar">
-      <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)' }}>
+    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <img src="/logo.png" alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
           <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>ZLabs Portal</span>
         </div>
+        {/* Close button for mobile */}
+        <button className="mobile-sidebar-close" onClick={onClose} style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+          <X size={20} />
+        </button>
       </div>
 
       <div style={{ padding: '16px 16px 12px', borderBottom: '1px solid var(--border-sub)' }}>
