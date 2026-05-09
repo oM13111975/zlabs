@@ -224,13 +224,21 @@
 }
 
 @media (max-width: 700px) {
-  .lp-nav__links, .lp-nav__actions .lp-btn--ghost { display: none; }
+  /* Show Sign In button in header on mobile, hide View Openings to save space */
+  .lp-nav__links, .lp-nav__actions .lp-btn--dark { display: none; }
+  .lp-nav__actions .lp-btn--ghost { display: inline-flex; }
+  
   .lp-nav__burger { display: flex; }
   .lp-hero__h1 { font-size: 40px; }
+  
+  /* Grid Fixes to prevent horizontal scrolling and squishing */
   .lp-features__grid { grid-template-columns: 1fr; }
+  .lp-benefits__grid { grid-template-columns: 1fr; }
+  
   .lp-statsbar__inner { grid-template-columns: 1fr 1fr; }
   .lp-footer__main { grid-template-columns: 1fr; }
   .lp-section-head h2 { font-size: 34px; }
+  .lp-container { padding: 0 20px; }
   
   /* Mobile Menu Open State */
   .lp-nav__links.open {
