@@ -231,4 +231,19 @@
   .lp-statsbar__inner { grid-template-columns: 1fr 1fr; }
   .lp-footer__main { grid-template-columns: 1fr; }
   .lp-section-head h2 { font-size: 34px; }
+  
+  /* Mobile Menu Open State */
+  .lp-nav__links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
 }

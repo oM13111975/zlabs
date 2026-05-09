@@ -178,7 +178,7 @@ export const EnrollPage = () => {
         title="Enrollment Center" 
         subtitle="Onboard new members individually or in bulk"
         actions={
-          <button onClick={() => navigate('/admin/dashboard')} className="btn btn-ghost btn-sm">
+          <button onClick={() => navigate('/admin')} className="btn btn-ghost btn-sm">
             <ArrowLeft size={16} /> Back to Dashboard
           </button>
         }
