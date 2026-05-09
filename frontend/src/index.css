@@ -873,4 +873,16 @@ tr:hover td { background-color: var(--bg-base); }
   div[style*="gridTemplateColumns"] {
     grid-template-columns: 1fr !important;
   }
+
+  /* Login Page Responsiveness */
+  .login-card {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    padding: 24px !important;
+    border-radius: 20px !important;
+  }
+  
+  .login-container {
+    padding: 12px !important;
+  }
 }

@@ -40,7 +40,7 @@ export const LoginPage = () => {
   }
 
   return (
-    <div style={{ 
+    <div className="login-container" style={{ 
       minHeight: '100vh', 
       background: theme.bg, 
       display: 'flex', 
@@ -49,7 +49,7 @@ export const LoginPage = () => {
       padding: 24,
       fontFamily: "'Inter', sans-serif"
     }}>
-      <div style={{ 
+      <div className="login-card" style={{ 
         width: '100%', 
         maxWidth: 1000, 
         display: 'grid', 
